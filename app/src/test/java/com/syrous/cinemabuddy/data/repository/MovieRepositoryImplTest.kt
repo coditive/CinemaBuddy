@@ -2,6 +2,9 @@ package com.syrous.cinemabuddy.data.repository
 
 import com.syrous.cinemabuddy.data.ConstantData
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
+import com.syrous.cinemabuddy.domain.model.MovieDomainModel
+import com.syrous.cinemabuddy.domain.model.Result
+import com.syrous.cinemabuddy.domain.model.Result.Success
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
@@ -41,15 +44,16 @@ class MovieRepositoryImplTest {
         } returns ConstantData.getPopularMoviesList(apiKey, lang, page, region)
 
         // when
-        val result = runBlocking { cut.fetchAndSaveTopRateMovies(apiKey, lang, page, region) }
+        val result = runBlocking {
+           val res = cut.fetchAndCacheTopRateMovies(apiKey, lang, page, region)
+            if(res is Success) {
+               res.data
+           }else {
+               emptyList()
+           }
+        }
 
         // then
-        result shouldBeEqualTo ConstantData.getPopularMoviesList(apiKey, lang, page, region)
-
-
+        result shouldBeEqualTo ConstantData.getPopularMoviesList(apiKey, lang, page, region).movieDomainModelList
     }
-
-
-
-
 }

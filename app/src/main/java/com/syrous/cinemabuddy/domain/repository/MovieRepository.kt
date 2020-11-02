@@ -3,7 +3,7 @@ package com.syrous.cinemabuddy.domain.repository
 import com.syrous.cinemabuddy.domain.model.MovieDomainModel
 import com.syrous.cinemabuddy.domain.model.Result
 
-internal interface MovieRepository {
+interface MovieRepository {
 
     suspend fun fetchAndCacheTopRateMovies(apiKey: String, lang: String, page: Int, region: String?): Result<List<MovieDomainModel>>
 

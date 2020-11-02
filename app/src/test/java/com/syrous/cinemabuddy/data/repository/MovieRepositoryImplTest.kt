@@ -1,9 +1,7 @@
 package com.syrous.cinemabuddy.data.repository
 
-import com.syrous.cinemabuddy.data.ConstantData
+import com.syrous.cinemabuddy.data.DataConstant
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
-import com.syrous.cinemabuddy.domain.model.MovieDomainModel
-import com.syrous.cinemabuddy.domain.model.Result
 import com.syrous.cinemabuddy.domain.model.Result.Success
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -37,11 +35,11 @@ class MovieRepositoryImplTest {
 
 
     @Test
-    fun `fetchAndSaveTopRateMovies fetches top rated movies and convert it domain object list`() {
+    fun `fetchAndSaveTopRatedMovies fetches top rated movies and convert it to list of domain object`() {
         // given
         coEvery {
             mockService.getTopRatedMoviesList(apiKey, lang, page, region)
-        } returns ConstantData.getPopularMoviesList(apiKey, lang, page, region)
+        } returns DataConstant.getTopRatedMoviesList(apiKey, lang, page, region)
 
         // when
         val result = runBlocking {
@@ -54,6 +52,32 @@ class MovieRepositoryImplTest {
         }
 
         // then
-        result shouldBeEqualTo ConstantData.getPopularMoviesList(apiKey, lang, page, region).movieDomainModelList
+        result shouldBeEqualTo DataConstant.getTopRatedMoviesList(apiKey, lang, page, region).movieDomainModelList
     }
+
+    @Test
+    fun `fetchAndSavePopularMovies fetches popular movies and convert it to list of domain object`() {
+        // given
+        coEvery {
+            mockService.getPopularMoviesList(apiKey, lang, page, region)
+        } returns DataConstant.getPopularMoviesList(apiKey, lang, page, region)
+
+        // when
+        val result = runBlocking {
+            val res = cut.fetchAndCachePopularMovies(apiKey, lang, page, region)
+            if(res is Success) {
+                res.data
+            }else {
+                emptyList()
+            }
+        }
+
+        // then
+        result shouldBeEqualTo DataConstant.getPopularMoviesList(apiKey, lang, page, region).movieDomainModelList
+    }
+
+
+
+
+
 }

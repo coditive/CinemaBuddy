@@ -1,6 +1,6 @@
 package com.syrous.cinemabuddy.domain.model
 
-import com.syrous.cinemabuddy.data.ConstantData
+import com.syrous.cinemabuddy.data.DataConstant
 import junit.framework.TestCase.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -15,7 +15,7 @@ class MovieDomainModelTest {
 
     @Before
     fun `set up movies object to test`(){
-      movieDomainModel = ConstantData.getMovie()
+      movieDomainModel = DataConstant.getMovie()
     }
 
     @Test

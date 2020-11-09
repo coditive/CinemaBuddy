@@ -6,7 +6,7 @@ import com.syrous.cinemabuddy.domain.model.MovieDomainModel
 
 
 @JsonClass(generateAdapter = true)
-class MovieResponse (
+data class MovieResponse (
     val page: Int,
     @Json(name = "results") val movieDomainModelList: List<MovieDomainModel>,
     @Json(name = "total_pages") val totalPages: Int,

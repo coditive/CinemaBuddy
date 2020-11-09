@@ -23,7 +23,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
 @RunWith(JUnit4::class)
-class GetTopRatedMoviesUseCaseTest {
+class GetChartedMoviesUseCaseTest {
 
     private val apiKey = "Sample_api_key"
     private val lang = "us-en"

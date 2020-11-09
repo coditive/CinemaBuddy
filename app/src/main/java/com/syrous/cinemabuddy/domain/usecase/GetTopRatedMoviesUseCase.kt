@@ -1,24 +1,25 @@
 package com.syrous.cinemabuddy.domain.usecase
 
-import android.security.keystore.UserNotAuthenticatedException
-import com.syrous.cinemabuddy.BuildConfig
-import com.syrous.cinemabuddy.domain.model.MovieDomainModel
-import com.syrous.cinemabuddy.domain.model.Result
+import androidx.paging.toLiveData
+import com.syrous.cinemabuddy.data.local.ChartedMoviesDao
 import com.syrous.cinemabuddy.domain.model.Result.Error
 import com.syrous.cinemabuddy.domain.model.Result.Success
 import com.syrous.cinemabuddy.domain.repository.MovieRepository
+import javax.inject.Inject
 
-class GetTopRatedMoviesUseCase (
-    private val movieRepository: MovieRepository
+class GetTopRatedMoviesUseCase @Inject constructor (
+    private val movieRepository: MovieRepository,
+    private val chartedMoviesDao: ChartedMoviesDao
 ) {
+
+    val topRatedMoviesLiveData = chartedMoviesDao
+
     sealed class UseState {
-        class Success(val data: List<MovieDomainModel>): UseState()
+        class Success(val data: Boolean): UseState()
         class Error(val e: Exception): UseState()
     }
 
-
     suspend fun execute(apiKey: String, lang: String, page: Int, region: String): UseState {
-
         val result = movieRepository.fetchAndCacheTopRateMovies(
             apiKey,
             lang,
@@ -26,9 +27,9 @@ class GetTopRatedMoviesUseCase (
             region
         )
 
-       return when (result) {
+      return when (result) {
            is Success -> {
-               UseState.Success(result.data)
+               UseState.Success(true)
            }
            is Error -> {
                UseState.Error(result.exception)

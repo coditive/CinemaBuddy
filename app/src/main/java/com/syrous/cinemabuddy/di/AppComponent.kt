@@ -1,6 +1,7 @@
 package com.syrous.cinemabuddy.di
 
 import android.app.Application
+import com.syrous.cinemabuddy.presentation.MainActivity
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -12,4 +13,6 @@ interface AppComponent {
     interface Factory {
         fun create(@BindsInstance application: Application): AppComponent
     }
+
+    fun inject(mainActivity: MainActivity)
 }

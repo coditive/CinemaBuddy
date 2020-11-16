@@ -17,5 +17,4 @@ class MovieTypeConverter {
            else -> ChartType.NORMAL
        }
     }
-
 }

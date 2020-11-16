@@ -1,5 +1,6 @@
 package com.syrous.cinemabuddy.di
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -17,7 +18,7 @@ class RoomModule {
 
     @Provides
     @Singleton
-    fun provideDb(context: Context): CinemaBuddyDB {
+    fun provideDb(context: Application): CinemaBuddyDB {
         cinemaBuddyDB = Room.databaseBuilder(
             context.applicationContext,
             CinemaBuddyDB::class.java,
@@ -29,4 +30,16 @@ class RoomModule {
     @Reusable
     @Provides
     fun provideTopRatedMoviesDao(cinemaBuddyDB: CinemaBuddyDB) = cinemaBuddyDB.chartedMoviesDao()
+
+    @Reusable
+    @Provides
+    fun provideGenreDao(cinemaBuddyDB: CinemaBuddyDB) = cinemaBuddyDB.genreDao()
+
+    @Reusable
+    @Provides
+    fun provideMoviesDao(cinemaBuddyDB: CinemaBuddyDB) = cinemaBuddyDB.moviesDao()
+
+    @Reusable
+    @Provides
+    fun provideMoviesWithGenreDao(cinemaBuddyDB: CinemaBuddyDB) = cinemaBuddyDB.moviesWithGenreDao()
 }

@@ -1,13 +1,12 @@
 package com.syrous.cinemabuddy.domain.usecase
 
-import androidx.paging.toLiveData
 import com.syrous.cinemabuddy.data.local.ChartedMoviesDao
 import com.syrous.cinemabuddy.domain.model.Result.Error
 import com.syrous.cinemabuddy.domain.model.Result.Success
 import com.syrous.cinemabuddy.domain.repository.MovieRepository
 import javax.inject.Inject
 
-class GetTopRatedMoviesUseCase @Inject constructor (
+class GetTopRatedMoviesUseCase constructor (
     private val movieRepository: MovieRepository,
     private val chartedMoviesDao: ChartedMoviesDao
 ) {

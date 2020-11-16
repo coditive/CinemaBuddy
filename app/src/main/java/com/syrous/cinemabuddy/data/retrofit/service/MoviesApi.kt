@@ -1,5 +1,6 @@
 package com.syrous.cinemabuddy.data.retrofit.service
 
+import com.syrous.cinemabuddy.data.model.GenreModel
 import com.syrous.cinemabuddy.data.retrofit.response.GenreResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
 import retrofit2.Call
@@ -10,14 +11,14 @@ import retrofit2.http.Query
 
 interface MoviesApi {
 
-    @GET("/genre/movie/list")
-    fun getGenreList(
+    @GET("genre/movie/list")
+   suspend fun getGenreList(
         @Query("api_key") apiKey: String,
         @Query("language")lang: String,
     ): GenreResponse
 
     @GET("movie/popular")
-    fun getPopularMoviesList(
+   suspend fun getPopularMoviesList(
             @Query("api_key") apiKey: String,
             @Query("language")lang: String,
             @Query("page") page: Int,
@@ -26,7 +27,7 @@ interface MoviesApi {
 
 
     @GET("movie/top_rated")
-    fun getTopRatedMoviesList(
+    suspend fun getTopRatedMoviesList(
             @Query("api_key") apiKey: String,
             @Query("language")lang: String,
             @Query("page") page: Int,
@@ -35,7 +36,7 @@ interface MoviesApi {
 
 
     @GET("movie/upcoming")
-    fun getUpcomingMovies(
+    suspend fun getUpcomingMovies(
             @Query("api_key") apiKey: String,
             @Query("language")lang: String,
             @Query("page") page: Int,

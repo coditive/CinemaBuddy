@@ -1,14 +1,14 @@
-package com.syrous.cinemabuddy.domain.model
+package com.syrous.cinemabuddy.data.local.model
 
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.syrous.cinemabuddy.data.local.ChartedMovies
-import com.syrous.cinemabuddy.data.local.model.MovieDBModel
+import com.syrous.cinemabuddy.domain.model.GenreDomainModel
+import com.syrous.cinemabuddy.domain.model.MovieDomainModel
 
 
-data class MovieDomainModel (
-    val id: Int,
+@Entity
+data class MovieDBModel(
+    @PrimaryKey val id: Int,
     val title: String,
     val originalTitle: String,
     val overview: String?,
@@ -17,7 +17,6 @@ data class MovieDomainModel (
     val posterPath: String?,
     val backdropPath: String?,
     val originalLang: String,
-    val genreIdList: List<GenreDomainModel>?,
     var video: Boolean,
     var voteAverage: Double,
     var popularity: Double,
@@ -25,13 +24,7 @@ data class MovieDomainModel (
     var createdAt: Long
 )
 
-fun MovieDomainModel.toChartedMovies(chartType: ChartType): ChartedMovies = ChartedMovies(
-    movieId = this.id,
-    chartType = chartType,
-    timestamp = System.currentTimeMillis()
-)
-
-fun MovieDomainModel.toMovieDbModel(): MovieDBModel = MovieDBModel(
+fun MovieDBModel.toMovieDomainModel(genreList: List<GenreDomainModel>): MovieDomainModel = MovieDomainModel(
     id = id,
     title = title,
     originalTitle = originalTitle,
@@ -41,6 +34,7 @@ fun MovieDomainModel.toMovieDbModel(): MovieDBModel = MovieDBModel(
     posterPath = posterPath,
     backdropPath = backdropPath,
     originalLang = originalLang,
+    genreIdList = genreList,
     video = video,
     voteAverage = voteAverage,
     popularity = popularity,

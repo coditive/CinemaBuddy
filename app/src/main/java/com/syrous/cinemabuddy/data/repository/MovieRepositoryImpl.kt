@@ -1,11 +1,19 @@
 package com.syrous.cinemabuddy.data.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.model.toGenreDomainModel
+import com.syrous.cinemabuddy.data.retrofit.response.GenreResponse
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.*
 import com.syrous.cinemabuddy.domain.model.Result.*
 import com.syrous.cinemabuddy.domain.repository.MovieRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 import kotlin.jvm.Throws
 
@@ -31,23 +39,24 @@ class MovieRepositoryImpl @Inject constructor(
     private val moviesWithGenreDao: MoviesWithGenreDao
 ) : MovieRepository {
 
-    override suspend fun fetchAndCacheGenreList(apiKey: String, lang: String): Result<Boolean> {
-        return try {
-            val genreList = moviesApi.getGenreList(
-                apiKey,
-                lang
-            ).genreList
-            for (genre in genreList) {
-                genreDao.insertGenreInTable(genre.toGenreDomainModel(lang))
-            }
-            Success(true)
-        } catch (e: Exception) {
-            Error(e)
-        }
+    override suspend fun fetchAndCacheGenreList(apiKey: String, lang: String) {
+       withContext(Dispatchers.IO) {
+           try {
+               val genreResponse = moviesApi.getGenreList(apiKey, lang)
+               for (genre in genreResponse.genreList) {
+                   genreDao.saveGenreList(genre.toGenreDomainModel(lang))
+               }
+           } catch (e: Exception) {
+                e.printStackTrace()
+           }
+       }
     }
 
-    override suspend fun getMoviesFromLocalStorage() {
+    override fun observeGenreData(lang: String): LiveData<List<GenreDomainModel>> =
+        genreDao.getGenreListForLang(lang)
 
+    override suspend fun getMoviesFromLocalStorage() {
+        TODO("Not yet implemented")
     }
 
     override suspend fun fetchAndCacheTopRateMovies(
@@ -56,31 +65,7 @@ class MovieRepositoryImpl @Inject constructor(
         page: Int,
         region: String?
     ): Result<Boolean> {
-      return try {
-          val moviesList = moviesApi.getTopRatedMoviesList(
-             apiKey,
-              lang,
-              page,
-              region
-          ).movieDomainModelList
-
-          for (movie in moviesList) {
-              saveChartedMoviesInTables(movie, ChartType.TOP_RATED)
-          }
-          Success(true)
-        } catch (e: Exception) {
-          e.printStackTrace()
-          Error(e)
-        }
-    }
-
-    @Throws(Exception::class)
-    private suspend fun saveChartedMoviesInTables(movie: MovieDomainModel, chartType: ChartType) {
-        for (genre in movie.genreIdList!!) {
-            moviesWithGenreDao.saveMoviesWithGenre(MoviesWithGenreList(movie.id, genre))
-        }
-        chartedMoviesDao.saveChartedMovie(movie.toChartedMovies(chartType))
-        moviesDao.saveMovie(movie)
+        TODO("Not yet implemented")
     }
 
     override suspend fun fetchAndCachePopularMovies(

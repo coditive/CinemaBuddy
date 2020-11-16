@@ -1,5 +1,6 @@
 package com.syrous.cinemabuddy.di
 
+import android.app.Application
 import android.content.Context
 import com.syrous.cinemabuddy.BuildConfig
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
@@ -19,27 +20,17 @@ import javax.inject.Singleton
 class NetworkModule {
 
     private val DEFAULT_TIMEOUT = 60L
-    private val CACHE_SIZE = 10 * 1024 * 1024
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(cache: Cache) : OkHttpClient {
+    fun provideOkHttpClient() : OkHttpClient {
         return OkHttpClient.Builder().apply {
             if (BuildConfig.DEBUG) {
                 val httpLoggingInterceptor = HttpLoggingInterceptor()
                 httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
                 addInterceptor(httpLoggingInterceptor)
             }
-            cache(cache)
-            connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
-            readTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
-            writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
         }.build()
-    }
-
-    @Provides
-    internal fun provideCache(context: Context): Cache {
-        return  Cache(context.cacheDir, CACHE_SIZE.toLong())
     }
 
     @Singleton

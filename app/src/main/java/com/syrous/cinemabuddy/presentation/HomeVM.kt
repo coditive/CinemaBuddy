@@ -4,10 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.syrous.cinemabuddy.BuildConfig
-import com.syrous.cinemabuddy.data.repository.MovieRepositoryImpl
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 import com.syrous.cinemabuddy.domain.repository.MovieRepository
-import com.syrous.cinemabuddy.domain.usecase.GetTopRatedMoviesUseCase
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,6 +19,13 @@ private val movieRepository: MovieRepository
         }
     }
 
-    fun observeGenreData(): LiveData<List<GenreDomainModel>> =
+    fun observeGenreData(): Flow<List<GenreDomainModel>> =
         movieRepository.observeGenreData("en-US")
+
+
+    fun getTopRatedMovie() {
+        viewModelScope.launch {
+            movieRepository.fetchAndCacheTopRateMovies(BuildConfig.API_KEY_V3, "en-US", 1, null)
+        }
+    }
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import com.syrous.cinemabuddy.presentation.MainActivity
 import dagger.BindsInstance
 import dagger.Component
+import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Singleton
 
 @Singleton
@@ -14,5 +15,6 @@ interface AppComponent {
         fun create(@BindsInstance application: Application): AppComponent
     }
 
+    @InternalCoroutinesApi
     fun inject(mainActivity: MainActivity)
 }

@@ -1,6 +1,7 @@
 package com.syrous.cinemabuddy.data.model
 
 import com.syrous.cinemabuddy.data.local.model.MovieDBModel
+import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 
 fun GenreModel.toGenreDomainModel(lang: String) =
@@ -28,3 +29,13 @@ fun MovieModel.toMovieDbModel(): MovieDBModel = MovieDBModel(
     createdAt = System.currentTimeMillis()
 )
 
+fun MovieModel.toChartedMovie(chartType: ChartType) = ChartedMovies(
+    movieId = id,
+    chartType = chartType,
+    timestamp = System.currentTimeMillis()
+)
+
+fun MovieModel.toMovieWithGenre(genreId: Int) = MovieWithGenre(
+    movieId = id,
+    genreId = genreId
+)

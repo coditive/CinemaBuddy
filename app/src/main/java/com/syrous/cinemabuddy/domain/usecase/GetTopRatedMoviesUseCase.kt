@@ -18,24 +18,23 @@ class GetTopRatedMoviesUseCase constructor (
         class Error(val e: Exception): UseState()
     }
 
-    suspend fun execute(apiKey: String, lang: String, page: Int, region: String): UseState {
-        val result = movieRepository.fetchAndCacheTopRateMovies(
-            apiKey,
-            lang,
-            page,
-            region
-        )
-
-      return when (result) {
-           is Success -> {
-               UseState.Success(true)
-           }
-           is Error -> {
-               UseState.Error(result.exception)
-           }
-           else -> {
-               UseState.Error(Exception("Invalid State"))
-           }
-       }
+//    suspend fun execute(apiKey: String, lang: String, page: Int, region: String): UseState {
+//        val result = movieRepository.fetchAndCacheTopRateMovies(
+//            apiKey,
+//            lang,
+//            page,
+//            region
+//        )
+//
+////      return when (result) {
+////           is Success -> {
+////               UseState.Success(true)
+////           }
+////           is Error -> {
+////               UseState.Error(result.exception)
+////           }
+////           else -> {
+////               UseState.Error(Exception("Invalid State"))
+////           }
+//       }
     }
-}

@@ -1,10 +1,8 @@
 package com.syrous.cinemabuddy.domain.model
 
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
-import com.syrous.cinemabuddy.data.local.ChartedMovies
+
 import com.syrous.cinemabuddy.data.local.model.MovieDBModel
+import com.syrous.cinemabuddy.data.model.ChartedMovies
 
 
 data class MovieDomainModel (

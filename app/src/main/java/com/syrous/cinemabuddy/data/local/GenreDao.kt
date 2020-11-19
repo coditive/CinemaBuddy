@@ -1,19 +1,21 @@
 package com.syrous.cinemabuddy.data.local
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GenreDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveGenreList(genreList: GenreDomainModel)
+    suspend fun saveGenre(genre: GenreDomainModel)
 
     @Query("SELECT * FROM GenreDomainModel WHERE lang = :lang")
-    fun getGenreListForLang(lang: String): LiveData<List<GenreDomainModel>>
+    fun observeGenreListForLang(lang: String): Flow<List<GenreDomainModel>>
 
+    @Query("SELECT * FROM GenreDomainModel WHERE lang = :lang")
+    suspend fun getGenreListForMovie(lang: String): Flow<List<GenreDomainModel>>
 }

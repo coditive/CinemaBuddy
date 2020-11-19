@@ -3,10 +3,13 @@ package com.syrous.cinemabuddy.presentation
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.asLiveData
 import com.syrous.cinemabuddy.CinemaBuddyApplication
 import com.syrous.cinemabuddy.R
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
+@InternalCoroutinesApi
 class MainActivity: AppCompatActivity() {
 
     @Inject
@@ -25,8 +28,13 @@ class MainActivity: AppCompatActivity() {
 
         viewModel.getTheGenreList()
 
-        viewModel.observeGenreData().observe(this) {
-            Log.d("MainActivity", it.toString())
+        viewModel.observeGenreData().asLiveData().observe(this) {
+            Log.d("MainActivity", "$it")
         }
+
+        viewModel.getTopRatedMovie()
     }
+
+
+
 }

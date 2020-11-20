@@ -17,7 +17,6 @@ interface ChartedMoviesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun makeEntryForMovie(chartedEntry: ChartedMovies)
 
-    @Query("SELECT * FROM chartedmovies WHERE chartType = :chartType")
-    suspend fun getListOfChartedMovies(chartType: ChartType): Flow<List<ChartedMovies>>
-
+    @Query("SELECT * FROM moviedbmodel as m JOIN chartedmovies ON id = movieId WHERE chartType = :chartType")
+    fun getListOfChartedMovies(chartType: ChartType): Flow<List<MovieDBModel>>
 }

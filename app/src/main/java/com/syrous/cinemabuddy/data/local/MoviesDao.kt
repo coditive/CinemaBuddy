@@ -14,5 +14,5 @@ interface MoviesDao {
     suspend fun saveMovie(movie: MovieDBModel)
 
     @Query("SELECT * FROM moviedbmodel WHERE id = :movieId")
-    suspend fun observeMovieWithId(movieId: Int): Flow<MovieDBModel>
+    suspend fun getMovieFromDb(movieId: Int): MovieDBModel
 }

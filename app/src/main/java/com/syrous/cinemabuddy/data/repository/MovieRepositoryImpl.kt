@@ -2,31 +2,22 @@ package com.syrous.cinemabuddy.data.repository
 
 import androidx.lifecycle.LiveData
 import com.syrous.cinemabuddy.data.local.*
+import com.syrous.cinemabuddy.data.local.model.MovieDBModel
+import com.syrous.cinemabuddy.data.local.model.toMovieDomainModel
 import com.syrous.cinemabuddy.data.model.*
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.*
 import com.syrous.cinemabuddy.domain.repository.MovieRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.jvm.Throws
 
-/**
- *   Todo List for Next Day
- *
- *    Use Room's @relation feature to again model the database schema
- *
- *    Implement saveChartedMoviesInTables() To differentiate entry of genre in genre table while saving in local storage
- *
- *    Implement function to combine the result of database fetch for movies list and genre it's in and deliver whole MovieDomainModel Object
- *
- *    Check for the sql statement for ChartedMoviesDao observe function to get the correct domain object.
- *
- */
-
-
+@FlowPreview
 class MovieRepositoryImpl @Inject constructor(
     private val moviesApi: MoviesApi,
     private val genreDao: GenreDao,
@@ -51,9 +42,18 @@ class MovieRepositoryImpl @Inject constructor(
     override fun observeGenreData(lang: String): Flow<List<GenreDomainModel>> =
         genreDao.observeGenreListForLang(lang)
 
-    override fun observeChartedMovies(chartType: ChartType): LiveData<List<MovieDomainModel>> {
-        TODO()
-    }
+    override fun observeChartedMovies(chartType: ChartType): Flow<List<MovieDomainModel>> = chartedMoviesDao
+        .getListOfChartedMovies(chartType)
+        .flatMapConcat { moviesDbList ->
+            flow {
+                val movieDomainList = mutableListOf<MovieDomainModel>()
+                for(movie in moviesDbList) {
+                    val genreList = moviesWithGenreDao.getGenreListForMovie(movie.id)
+                    movieDomainList.add(movie.toMovieDomainModel(genreList))
+                }
+                emit(movieDomainList.toList())
+            }
+        }
 
     override suspend fun fetchAndCacheTopRateMovies(
         apiKey: String,
@@ -87,8 +87,15 @@ class MovieRepositoryImpl @Inject constructor(
         lang: String,
         page: Int,
         region: String?
-    ): Result<Boolean> {
-        TODO("Not yet implemented")
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                val movieResponse = moviesApi.getPopularMoviesList(apiKey, lang, page, region)
+                saveMovieToLocalStorage(movieResponse, ChartType.POPULAR)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
 

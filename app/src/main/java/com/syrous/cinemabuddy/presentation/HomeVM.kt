@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.syrous.cinemabuddy.BuildConfig
+import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
+import com.syrous.cinemabuddy.domain.model.MovieDomainModel
 import com.syrous.cinemabuddy.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -23,9 +25,21 @@ private val movieRepository: MovieRepository
         movieRepository.observeGenreData("en-US")
 
 
+    fun observeTopRatedMovies(): Flow<List<MovieDomainModel>> =
+        movieRepository.observeChartedMovies(ChartType.TOP_RATED)
+
     fun getTopRatedMovie() {
         viewModelScope.launch {
             movieRepository.fetchAndCacheTopRateMovies(BuildConfig.API_KEY_V3, "en-US", 1, null)
+        }
+    }
+
+    fun observePopularMovies(): Flow<List<MovieDomainModel>> =
+        movieRepository.observeChartedMovies(ChartType.POPULAR)
+
+    fun getPopularMovie() {
+        viewModelScope.launch {
+            movieRepository.fetchAndCachePopularMovies(BuildConfig.API_KEY_V3, "en-US", 1, null)
         }
     }
 }

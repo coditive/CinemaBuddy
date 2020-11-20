@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
     suspend fun fetchAndCacheGenreList(apiKey: String, lang: String)
-    fun observeChartedMovies(chartType: ChartType): LiveData<List<MovieDomainModel>>
+    fun observeChartedMovies(chartType: ChartType): Flow<List<MovieDomainModel>>
     fun observeGenreData(lang: String): Flow<List<GenreDomainModel>>
     suspend fun fetchAndCacheTopRateMovies(apiKey: String, lang: String, page: Int, region: String?)
-    suspend fun fetchAndCachePopularMovies(apiKey: String, lang: String, page: Int, region: String?): Result<Boolean>
+    suspend fun fetchAndCachePopularMovies(apiKey: String, lang: String, page: Int, region: String?)
 }

@@ -15,7 +15,4 @@ interface GenreDao {
 
     @Query("SELECT * FROM GenreDomainModel WHERE lang = :lang")
     fun observeGenreListForLang(lang: String): Flow<List<GenreDomainModel>>
-
-    @Query("SELECT * FROM GenreDomainModel WHERE lang = :lang")
-    suspend fun getGenreListForMovie(lang: String): Flow<List<GenreDomainModel>>
 }

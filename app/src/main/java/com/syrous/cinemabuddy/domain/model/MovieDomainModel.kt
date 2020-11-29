@@ -2,7 +2,7 @@ package com.syrous.cinemabuddy.domain.model
 
 
 import com.syrous.cinemabuddy.data.local.model.MovieDBModel
-import com.syrous.cinemabuddy.data.model.ChartedMovies
+import com.syrous.cinemabuddy.data.local.model.ChartedMovies
 
 
 data class MovieDomainModel (

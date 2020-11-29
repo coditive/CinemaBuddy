@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.data.model
+package com.syrous.cinemabuddy.data.local.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

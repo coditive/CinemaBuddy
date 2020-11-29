@@ -19,7 +19,7 @@ data class MovieDetailResponse (
     val popularity: Double,
     @Json(name = "poster_path") val posterPath: String?,
     @Json(name = "production_companies") val productionCompanyList: List<ProductionCompany>,
-    @Json(name = "production_countries")val productionCountryList: List<ProductionCountry>,
+    @Json(name = "production_countries") val productionCountryList: List<ProductionCountry>,
     val revenue: Int,
     val runtime: Int?,
     @Json(name = "spoken_languages") val languageList: List<SpokenLanguage>,

@@ -1,6 +1,8 @@
 package com.syrous.cinemabuddy.data.model
 
+import com.syrous.cinemabuddy.data.local.model.ChartedMovies
 import com.syrous.cinemabuddy.data.local.model.MovieDBModel
+import com.syrous.cinemabuddy.data.local.model.MovieWithGenre
 import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 

@@ -1,22 +1,26 @@
 package com.syrous.cinemabuddy
 
 import android.app.Application
+import androidx.work.Configuration
 import com.syrous.cinemabuddy.di.AppComponent
 import com.syrous.cinemabuddy.di.DaggerAppComponent
+import javax.inject.Inject
 
-class CinemaBuddyApplication : Application() {
+class CinemaBuddyApplication : Application(), Configuration.Provider {
 
-    // Instance of the AppComponent that will be used by all the Activities in the project
+    @Inject
+    lateinit var workConfig: Configuration
+
     val appComponent: AppComponent by lazy {
-        // Creates an instance of AppComponent using its Factory constructor
-        // We pass the applicationContext that will be used as Context in the graph
         DaggerAppComponent.factory().create(applicationContext as Application)
     }
 
     override fun onCreate() {
         super.onCreate()
 
+    }
 
-
+    override fun getWorkManagerConfiguration(): Configuration {
+        TODO("Not yet implemented")
     }
 }

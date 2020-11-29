@@ -8,7 +8,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [NetworkModule::class, RepoModule::class, RoomModule::class])
+@Component(modules = [NetworkModule::class, RepoModule::class, RoomModule::class, WorkManagerModule::class])
 interface AppComponent {
     @Component.Factory
     interface Factory {
@@ -17,4 +17,6 @@ interface AppComponent {
 
     @InternalCoroutinesApi
     fun inject(mainActivity: MainActivity)
+
+    fun inject(application: Application)
 }

@@ -2,12 +2,10 @@ package com.syrous.cinemabuddy.data.retrofit.service
 
 import com.syrous.cinemabuddy.data.model.GenreModel
 import com.syrous.cinemabuddy.data.retrofit.response.GenreResponse
+import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
 import retrofit2.Call
-import retrofit2.http.FieldMap
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface MoviesApi {
 
@@ -43,4 +41,10 @@ interface MoviesApi {
             @Query("region") region: String?
     ): MovieResponse
 
+    @GET("movie/{movieId}")
+    suspend fun getMovieDetails(
+        @Path("movieId") movieId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("language")lang: String
+    ): MovieDetailResponse
 }

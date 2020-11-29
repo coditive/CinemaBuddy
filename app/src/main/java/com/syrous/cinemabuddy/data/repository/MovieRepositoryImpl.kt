@@ -1,10 +1,10 @@
 package com.syrous.cinemabuddy.data.repository
 
-import androidx.lifecycle.LiveData
+import android.util.Log
 import com.syrous.cinemabuddy.data.local.*
-import com.syrous.cinemabuddy.data.local.model.MovieDBModel
 import com.syrous.cinemabuddy.data.local.model.toMovieDomainModel
 import com.syrous.cinemabuddy.data.model.*
+import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.*
@@ -12,7 +12,6 @@ import com.syrous.cinemabuddy.domain.repository.MovieRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.jvm.Throws
@@ -42,18 +41,17 @@ class MovieRepositoryImpl @Inject constructor(
     override fun observeGenreData(lang: String): Flow<List<GenreDomainModel>> =
         genreDao.observeGenreListForLang(lang)
 
-    override fun observeChartedMovies(chartType: ChartType): Flow<List<MovieDomainModel>> = chartedMoviesDao
-        .getListOfChartedMovies(chartType)
-        .flatMapConcat { moviesDbList ->
-            flow {
+    override fun observeChartedMovies(chartType: ChartType, offset: Int): Flow<List<MovieDomainModel>> = chartedMoviesDao
+        .getListOfChartedMovies(chartType, offset * 10 - 10)
+        .map { moviesDbList ->
                 val movieDomainList = mutableListOf<MovieDomainModel>()
                 for(movie in moviesDbList) {
                     val genreList = moviesWithGenreDao.getGenreListForMovie(movie.id)
                     movieDomainList.add(movie.toMovieDomainModel(genreList))
                 }
-                emit(movieDomainList.toList())
-            }
-        }
+            movieDomainList
+        }.flowOn(Dispatchers.IO)
+
 
     override suspend fun fetchAndCacheTopRateMovies(
         apiKey: String,
@@ -95,6 +93,13 @@ class MovieRepositoryImpl @Inject constructor(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    override suspend fun fetchMovieDetails(movieId: Int, apiKey: String, lang: String) {
+        withContext(Dispatchers.IO) {
+            val result = moviesApi.getMovieDetails(movieId, apiKey, lang)
+            Log.d("Repository", "Movie Detail Response : $result")
         }
     }
 

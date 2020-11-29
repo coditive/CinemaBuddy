@@ -18,30 +18,18 @@ class MainActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         (this.application as CinemaBuddyApplication).appComponent.inject(this)
     }
-
 
     override fun onStart() {
         super.onStart()
 
+
         viewModel.getTheGenreList()
-
-        viewModel.observeGenreData().asLiveData().observe(this) {
-            Log.d("MainActivity", "$it")
-        }
-        viewModel.getTopRatedMovie()
-
-        viewModel.observeTopRatedMovies().asLiveData().observe(this) {
-            Log.d("TopRated Movies", "${it.size}")
-        }
 
         viewModel.getPopularMovie()
 
-        viewModel.observePopularMovies().asLiveData().observe(this) {
-            Log.d("Popular Movies", "${it.size}")
-        }
+        viewModel.getMovieDetails()
     }
 
 

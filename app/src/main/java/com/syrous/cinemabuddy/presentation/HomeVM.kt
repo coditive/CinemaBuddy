@@ -1,6 +1,5 @@
 package com.syrous.cinemabuddy.presentation
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.syrous.cinemabuddy.BuildConfig
@@ -26,7 +25,7 @@ private val movieRepository: MovieRepository
 
 
     fun observeTopRatedMovies(): Flow<List<MovieDomainModel>> =
-        movieRepository.observeChartedMovies(ChartType.TOP_RATED)
+        movieRepository.observeChartedMovies(ChartType.TOP_RATED, 0)
 
     fun getTopRatedMovie() {
         viewModelScope.launch {
@@ -35,11 +34,17 @@ private val movieRepository: MovieRepository
     }
 
     fun observePopularMovies(): Flow<List<MovieDomainModel>> =
-        movieRepository.observeChartedMovies(ChartType.POPULAR)
+        movieRepository.observeChartedMovies(ChartType.POPULAR, 10)
 
     fun getPopularMovie() {
         viewModelScope.launch {
             movieRepository.fetchAndCachePopularMovies(BuildConfig.API_KEY_V3, "en-US", 1, null)
+        }
+    }
+
+    fun getMovieDetails() {
+        viewModelScope.launch {
+            movieRepository.fetchMovieDetails(240, BuildConfig.API_KEY_V3, "en-US")
         }
     }
 }

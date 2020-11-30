@@ -5,10 +5,13 @@ import com.syrous.cinemabuddy.data.local.TypeConverters.MovieTypeConverter
 import com.syrous.cinemabuddy.data.local.model.MovieDBModel
 import com.syrous.cinemabuddy.data.local.model.ChartedMovies
 import com.syrous.cinemabuddy.data.local.model.MovieWithGenre
+import com.syrous.cinemabuddy.data.local.model.MovieWithProductionCompany
+import com.syrous.cinemabuddy.data.model.ProductionCompany
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 
 
-@Database(entities = [MovieDBModel::class, ChartedMovies::class, GenreDomainModel::class, MovieWithGenre::class],
+@Database(entities = [MovieDBModel::class, ChartedMovies::class, GenreDomainModel::class,
+    MovieWithGenre::class, ProductionCompany::class, MovieWithProductionCompany::class],
     version = 1,
     exportSchema = false)
 @TypeConverters(MovieTypeConverter::class)
@@ -17,6 +20,8 @@ abstract class CinemaBuddyDB: RoomDatabase() {
     abstract fun moviesDao(): MoviesDao
     abstract fun chartedMoviesDao(): ChartedMoviesDao
     abstract fun moviesWithGenreDao(): MoviesWithGenreDao
+    abstract fun moviesWithProductionCompanyDao(): MoviesWithProductionCompanyDao
+    abstract fun productionCompanyDao(): ProductionCompanyDao
 }
 
 

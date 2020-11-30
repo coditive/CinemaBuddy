@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GenreDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun saveGenre(genre: GenreDomainModel)
 
     @Query("SELECT * FROM GenreDomainModel WHERE lang = :lang")

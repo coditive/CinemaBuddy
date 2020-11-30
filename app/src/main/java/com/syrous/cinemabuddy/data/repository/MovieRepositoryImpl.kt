@@ -4,7 +4,6 @@ import android.util.Log
 import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.local.model.toMovieDomainModel
 import com.syrous.cinemabuddy.data.model.*
-import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.*
@@ -62,7 +61,7 @@ class MovieRepositoryImpl @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 val movieResponse = moviesApi.getTopRatedMoviesList(apiKey, lang, page, region)
-                saveMovieToLocalStorage(movieResponse, ChartType.TOP_RATED)
+                saveMoviesToLocalStorage(movieResponse, ChartType.TOP_RATED)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -70,7 +69,7 @@ class MovieRepositoryImpl @Inject constructor(
     }
 
     @Throws(Exception::class)
-    private suspend fun saveMovieToLocalStorage(movieResponse: MovieResponse, chartType: ChartType){
+    private suspend fun saveMoviesToLocalStorage(movieResponse: MovieResponse, chartType: ChartType){
         for (movie in movieResponse.movieModelList) {
             moviesDao.saveMovie(movie.toMovieDbModel())
             for(genre in movie.genreIdList) {
@@ -89,7 +88,7 @@ class MovieRepositoryImpl @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 val movieResponse = moviesApi.getPopularMoviesList(apiKey, lang, page, region)
-                saveMovieToLocalStorage(movieResponse, ChartType.POPULAR)
+                saveMoviesToLocalStorage(movieResponse, ChartType.POPULAR)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

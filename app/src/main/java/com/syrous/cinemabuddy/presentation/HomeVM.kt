@@ -1,8 +1,11 @@
 package com.syrous.cinemabuddy.presentation
 
+import android.app.Application
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.syrous.cinemabuddy.BuildConfig
+import com.syrous.cinemabuddy.backgroundwork.enqueueSubscriptionWorker
 import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 import com.syrous.cinemabuddy.domain.model.MovieDomainModel
@@ -12,8 +15,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HomeVM @Inject constructor(
-private val movieRepository: MovieRepository
-) : ViewModel() {
+    private val context: Application,
+    private val movieRepository: MovieRepository
+    ) : ViewModel() {
     fun getTheGenreList() {
         viewModelScope.launch{
             movieRepository.fetchAndCacheGenreList(BuildConfig.API_KEY_V3, "en-US")
@@ -46,5 +50,9 @@ private val movieRepository: MovieRepository
         viewModelScope.launch {
             movieRepository.fetchMovieDetails(240, BuildConfig.API_KEY_V3, "en-US")
         }
+    }
+
+    fun enqueueBackgroundWork() {
+        context.enqueueSubscriptionWorker()
     }
 }

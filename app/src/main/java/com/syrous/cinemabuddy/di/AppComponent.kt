@@ -1,6 +1,7 @@
 package com.syrous.cinemabuddy.di
 
 import android.app.Application
+import com.syrous.cinemabuddy.CinemaBuddyApplication
 import com.syrous.cinemabuddy.presentation.MainActivity
 import dagger.BindsInstance
 import dagger.Component
@@ -18,5 +19,5 @@ interface AppComponent {
     @InternalCoroutinesApi
     fun inject(mainActivity: MainActivity)
 
-    fun inject(application: Application)
+    fun inject(cinemaBuddyApplication: CinemaBuddyApplication)
 }

@@ -4,6 +4,7 @@ import com.syrous.cinemabuddy.data.model.GenreModel
 import com.syrous.cinemabuddy.data.retrofit.response.GenreResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
+import com.syrous.cinemabuddy.data.retrofit.response.UpcomingMovieResponse
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -32,14 +33,13 @@ interface MoviesApi {
             @Query("region") region: String?
     ): MovieResponse
 
-
     @GET("movie/upcoming")
     suspend fun getUpcomingMovies(
             @Query("api_key") apiKey: String,
             @Query("language")lang: String,
             @Query("page") page: Int,
             @Query("region") region: String?
-    ): MovieResponse
+    ): UpcomingMovieResponse
 
     @GET("movie/{movieId}")
     suspend fun getMovieDetails(
@@ -47,4 +47,5 @@ interface MoviesApi {
         @Query("api_key") apiKey: String,
         @Query("language")lang: String
     ): MovieDetailResponse
+
 }

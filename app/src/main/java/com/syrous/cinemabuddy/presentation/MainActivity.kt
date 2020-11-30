@@ -32,6 +32,7 @@ class MainActivity: AppCompatActivity() {
         viewModel.getMovieDetails()
     }
 
-
-
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }

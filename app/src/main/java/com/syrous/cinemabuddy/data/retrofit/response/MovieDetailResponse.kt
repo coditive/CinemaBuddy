@@ -2,6 +2,7 @@ package com.syrous.cinemabuddy.data.retrofit.response
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import com.syrous.cinemabuddy.data.local.model.MovieWithProductionCompany
 import com.syrous.cinemabuddy.data.model.*
 
 @JsonClass(generateAdapter = true)
@@ -30,3 +31,9 @@ data class MovieDetailResponse (
     @Json(name = "vote_average") val voteAverage: Double,
     @Json(name = "vote_count") val voteCount: Int
     )
+
+fun MovieDetailResponse.toMovieWithProductionCompany(productionCompanyId: Int)
+: MovieWithProductionCompany = MovieWithProductionCompany(
+    movieId = this.id,
+    productionCompanyId = productionCompanyId
+)

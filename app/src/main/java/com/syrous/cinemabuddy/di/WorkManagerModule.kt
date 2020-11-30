@@ -14,9 +14,8 @@ import javax.inject.Singleton
 class WorkManagerModule {
 
     @Provides
-    @Singleton
-    fun provideWorkConfiguration(cinemaBuddyWorkerFactory: CinemaBuddyWorkerFactory
-    ): Configuration = Configuration.Builder()
+    fun provideWorkConfiguration(cinemaBuddyWorkerFactory: CinemaBuddyWorkerFactory)
+    : Configuration = Configuration.Builder()
         .setMinimumLoggingLevel(android.util.Log.DEBUG)
         .setWorkerFactory(cinemaBuddyWorkerFactory)
         .build()

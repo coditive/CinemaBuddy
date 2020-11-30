@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MoviesDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun saveMovie(movie: MovieDBModel)
 
     @Query("SELECT * FROM moviedbmodel WHERE id = :movieId")

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ChartedMoviesDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     suspend fun makeEntryForMovie(chartedEntry: ChartedMovies)
 
     @Query("SELECT * FROM moviedbmodel as m JOIN chartedmovies ON id = movieId WHERE chartType = :chartType LIMIT 10,:offset ")

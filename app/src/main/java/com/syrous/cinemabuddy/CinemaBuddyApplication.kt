@@ -2,6 +2,7 @@ package com.syrous.cinemabuddy
 
 import android.app.Application
 import androidx.work.Configuration
+import com.syrous.cinemabuddy.backgroundwork.CinemaBuddyWorkerFactory
 import com.syrous.cinemabuddy.di.AppComponent
 import com.syrous.cinemabuddy.di.DaggerAppComponent
 import javax.inject.Inject
@@ -17,10 +18,11 @@ class CinemaBuddyApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-
+        appComponent.inject(this)
     }
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        TODO("Not yet implemented")
-    }
+
+
+    override fun getWorkManagerConfiguration()
+    : Configuration = workConfig
 }

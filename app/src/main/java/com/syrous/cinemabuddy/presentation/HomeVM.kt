@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkRequest
 import com.syrous.cinemabuddy.BuildConfig
 import com.syrous.cinemabuddy.backgroundwork.enqueueSubscriptionWorker
 import com.syrous.cinemabuddy.domain.model.ChartType
@@ -52,7 +53,7 @@ class HomeVM @Inject constructor(
         }
     }
 
-    fun enqueueBackgroundWork() {
+    fun enqueueBackgroundWork(): WorkRequest =
         context.enqueueSubscriptionWorker()
-    }
+
 }

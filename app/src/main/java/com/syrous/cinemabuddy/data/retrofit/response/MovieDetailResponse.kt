@@ -7,7 +7,7 @@ import com.syrous.cinemabuddy.data.model.*
 
 @JsonClass(generateAdapter = true)
 data class MovieDetailResponse (
-    @Json(name = "belongs_to_collection") val collectionList: MovieCollection,
+    @Json(name = "belongs_to_collection") val collectionList: MovieCollection?,
     @Json(name = "backdrop_path") val backdropPath: String?,
     @Json(name = "adult") val isAdult: Boolean,
     @Json(name = "genres") val genreList: List<GenreModel>,

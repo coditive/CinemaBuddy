@@ -2,9 +2,11 @@ package com.syrous.cinemabuddy.backgroundwork
 
 import android.content.Context
 import android.provider.SyncStateContract
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.R
 import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.BuildConfig
@@ -41,17 +43,24 @@ class SubscriptionWorker(
                saveMovieWithProductionDetails(movieDetails)
            }
 
+           Log.d("Subscription Worker", "Inside Subs Worker and save Movies Executed!!!")
+
            buildNotificationAndShow("Finished Subscription Saving in DB",
                "Upcoming Movies are stored in DB with production Companies", context)
            Result.success()
         } catch (e: Exception) {
-            Result.failure()
+            val failureOutput = Data.Builder()
+                .putString(FAILURE_EXCEPTION, e.message)
+                .build()
+
+            Result.failure(failureOutput)
         }
     }
 
     private fun buildNotificationAndShow(title: String, message: String, context: Context, id: Int = Random.nextInt()) {
         context.createNotificationChannel()
         val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.notification_icon_background)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -82,5 +91,6 @@ class SubscriptionWorker(
 
     companion object {
         const val SUBSCRIPTION_TAG = "subscription_tag"
+        const val FAILURE_EXCEPTION = "failure_exception"
     }
 }

@@ -3,7 +3,7 @@ package com.syrous.cinemabuddy.data.retrofit.response
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.syrous.cinemabuddy.data.local.model.MovieWithProductionCompany
-import com.syrous.cinemabuddy.data.model.*
+import com.syrous.cinemabuddy.data.retrofit.model.*
 
 @JsonClass(generateAdapter = true)
 data class MovieDetailResponse (

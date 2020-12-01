@@ -6,7 +6,6 @@ import com.syrous.cinemabuddy.data.local.model.MovieDBModel
 import com.syrous.cinemabuddy.data.local.model.ChartedMovies
 import com.syrous.cinemabuddy.data.local.model.MovieWithGenre
 import com.syrous.cinemabuddy.data.local.model.MovieWithProductionCompany
-import com.syrous.cinemabuddy.data.model.ProductionCompany
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 import com.syrous.cinemabuddy.domain.model.ProductionCompanyDomainModel
 

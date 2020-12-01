@@ -3,7 +3,7 @@ package com.syrous.cinemabuddy.data.repository
 import android.util.Log
 import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.local.model.toMovieDomainModel
-import com.syrous.cinemabuddy.data.model.*
+import com.syrous.cinemabuddy.data.retrofit.model.*
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.*

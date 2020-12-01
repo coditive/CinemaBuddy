@@ -2,7 +2,6 @@ package com.syrous.cinemabuddy.data.local.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import com.syrous.cinemabuddy.data.model.GenreModel
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 
 

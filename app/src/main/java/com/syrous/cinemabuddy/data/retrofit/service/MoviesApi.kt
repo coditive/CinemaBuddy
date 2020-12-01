@@ -1,11 +1,9 @@
 package com.syrous.cinemabuddy.data.retrofit.service
 
-import com.syrous.cinemabuddy.data.model.GenreModel
 import com.syrous.cinemabuddy.data.retrofit.response.GenreResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
 import com.syrous.cinemabuddy.data.retrofit.response.UpcomingMovieResponse
-import retrofit2.Call
 import retrofit2.http.*
 
 interface MoviesApi {

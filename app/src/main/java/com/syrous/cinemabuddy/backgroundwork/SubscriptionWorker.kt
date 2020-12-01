@@ -9,10 +9,10 @@ import androidx.work.R
 import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.BuildConfig
 import com.syrous.cinemabuddy.data.local.*
-import com.syrous.cinemabuddy.data.model.toChartedMovie
-import com.syrous.cinemabuddy.data.model.toMovieDbModel
-import com.syrous.cinemabuddy.data.model.toMovieWithGenre
-import com.syrous.cinemabuddy.data.model.toProductionCompanyDomainModel
+import com.syrous.cinemabuddy.data.retrofit.model.toChartedMovie
+import com.syrous.cinemabuddy.data.retrofit.model.toMovieDbModel
+import com.syrous.cinemabuddy.data.retrofit.model.toMovieWithGenre
+import com.syrous.cinemabuddy.data.retrofit.model.toProductionCompanyDomainModel
 import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.data.retrofit.response.UpcomingMovieResponse
 import com.syrous.cinemabuddy.data.retrofit.response.toMovieWithProductionCompany
@@ -76,6 +76,8 @@ class SubscriptionWorker(
             val failureOutput = Data.Builder()
                 .putString(FAILURE_EXCEPTION, e.message)
                 .build()
+
+           buildNotificationAndShow("Error In Subscription Worker", e.message!!, context)
 
             Result.failure(failureOutput)
         }

@@ -1,10 +1,11 @@
-package com.syrous.cinemabuddy.data.model
+package com.syrous.cinemabuddy.data.retrofit.model
 
 import com.syrous.cinemabuddy.data.local.model.ChartedMovies
 import com.syrous.cinemabuddy.data.local.model.MovieDBModel
 import com.syrous.cinemabuddy.data.local.model.MovieWithGenre
 import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
+import com.syrous.cinemabuddy.domain.model.ProductionCompanyDomainModel
 
 fun GenreModel.toGenreDomainModel(lang: String) =
     GenreDomainModel(
@@ -40,4 +41,13 @@ fun MovieModel.toChartedMovie(chartType: ChartType) = ChartedMovies(
 fun MovieModel.toMovieWithGenre(genreId: Int) = MovieWithGenre(
     movieId = id,
     genreId = genreId
+)
+
+fun ProductionCompany.toProductionCompanyDomainModel(isSubscribed: Boolean
+): ProductionCompanyDomainModel = ProductionCompanyDomainModel(
+    id = id,
+    name = name,
+    logoPath = logoPath,
+    originCountry = originCountry,
+    isSubscribed = isSubscribed
 )

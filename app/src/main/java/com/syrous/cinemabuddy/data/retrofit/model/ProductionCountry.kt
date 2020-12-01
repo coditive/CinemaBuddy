@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.data.model
+package com.syrous.cinemabuddy.data.retrofit.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

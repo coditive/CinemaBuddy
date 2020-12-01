@@ -1,12 +1,8 @@
 package com.syrous.cinemabuddy.domain.repository
 
-import androidx.lifecycle.LiveData
-import com.syrous.cinemabuddy.data.model.MovieCollection
-import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 import com.syrous.cinemabuddy.domain.model.MovieDomainModel
-import com.syrous.cinemabuddy.domain.model.Result
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {

@@ -52,8 +52,6 @@ class HomeVM @Inject constructor(
             movieRepository.fetchMovieDetails(240, BuildConfig.API_KEY_V3, "en-US")
         }
     }
-
-    fun enqueueBackgroundWork(): WorkRequest =
-        context.enqueueSubscriptionWorker()
+    
 
 }

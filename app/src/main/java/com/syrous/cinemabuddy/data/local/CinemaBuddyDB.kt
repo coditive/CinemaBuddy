@@ -8,10 +8,11 @@ import com.syrous.cinemabuddy.data.local.model.MovieWithGenre
 import com.syrous.cinemabuddy.data.local.model.MovieWithProductionCompany
 import com.syrous.cinemabuddy.data.model.ProductionCompany
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
+import com.syrous.cinemabuddy.domain.model.ProductionCompanyDomainModel
 
 
 @Database(entities = [MovieDBModel::class, ChartedMovies::class, GenreDomainModel::class,
-    MovieWithGenre::class, ProductionCompany::class, MovieWithProductionCompany::class],
+    MovieWithGenre::class, ProductionCompanyDomainModel::class, MovieWithProductionCompany::class],
     version = 1,
     exportSchema = false)
 @TypeConverters(MovieTypeConverter::class)

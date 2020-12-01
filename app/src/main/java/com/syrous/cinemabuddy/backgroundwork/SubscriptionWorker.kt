@@ -1,8 +1,6 @@
 package com.syrous.cinemabuddy.backgroundwork
 
 import android.content.Context
-import android.provider.SyncStateContract
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
@@ -14,12 +12,14 @@ import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.model.toChartedMovie
 import com.syrous.cinemabuddy.data.model.toMovieDbModel
 import com.syrous.cinemabuddy.data.model.toMovieWithGenre
+import com.syrous.cinemabuddy.data.model.toProductionCompanyDomainModel
 import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.data.retrofit.response.UpcomingMovieResponse
 import com.syrous.cinemabuddy.data.retrofit.response.toMovieWithProductionCompany
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.utils.NOTIFICATION_CHANNEL_ID
+import com.syrous.cinemabuddy.utils.SystemConfigStorage
 import com.syrous.cinemabuddy.utils.createNotificationChannel
 import kotlin.jvm.Throws
 import kotlin.random.Random
@@ -32,21 +32,45 @@ class SubscriptionWorker(
     private val moviesDao: MoviesDao,
     private val moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
     private val productionCompanyDao: ProductionCompanyDao,
+    private val systemConfigStorage: SystemConfigStorage,
     private val context: Context
     ): CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result {
        return try {
-           val result = moviesApi.getUpcomingMovies(BuildConfig.API_KEY_V3, "en-US",1, null)
-           saveMoviesToLocalStorage(result,ChartType.UPCOMING)
+           systemConfigStorage.updateSubscriptionWorkerSyncStartTime(System.currentTimeMillis())
+
+           val result = moviesApi.getUpcomingMovies(BuildConfig.API_KEY_V3,
+               systemConfigStorage.getUserLang(),1, null)
+
+           saveMoviesToLocalStorage(result, ChartType.UPCOMING)
+
            for(movie in result.movieModelList) {
-               val movieDetails = moviesApi.getMovieDetails(movie.id, BuildConfig.API_KEY_V3, "en-US")
+               val movieDetails = moviesApi.getMovieDetails(movie.id, BuildConfig.API_KEY_V3,
+                   systemConfigStorage.getUserLang())
+
                saveMovieWithProductionDetails(movieDetails)
            }
 
-           Log.d("Subscription Worker", "Inside Subs Worker and save Movies Executed!!!")
+
+           for(i in 2..result.totalPages) {
+                val response = moviesApi.getUpcomingMovies(BuildConfig.API_KEY_V3,
+                systemConfigStorage.getUserLang(), i, null)
+
+               saveMoviesToLocalStorage(response, ChartType.UPCOMING)
+
+               for(movie in response.movieModelList) {
+                   val movieDetails = moviesApi.getMovieDetails(movie.id, BuildConfig.API_KEY_V3,
+                       systemConfigStorage.getUserLang())
+
+                   saveMovieWithProductionDetails(movieDetails)
+               }
+           }
 
            buildNotificationAndShow("Finished Subscription Saving in DB",
                "Upcoming Movies are stored in DB with production Companies", context)
+
+           systemConfigStorage.updateSubscriptionWorkerSyncEndTime(System.currentTimeMillis())
+
            Result.success()
         } catch (e: Exception) {
             val failureOutput = Data.Builder()
@@ -83,9 +107,11 @@ class SubscriptionWorker(
     @Throws(Exception::class)
     private suspend fun saveMovieWithProductionDetails(movieDetails: MovieDetailResponse) {
         for(productionCompany in movieDetails.productionCompanyList) {
+            productionCompanyDao.saveProductionCompany(productionCompany
+                .toProductionCompanyDomainModel(false))
+
             moviesWithProductionCompanyDao.saveMovieWithProductionCompany(
                 movieDetails.toMovieWithProductionCompany(productionCompany.id))
-            productionCompanyDao.saveProductionCompany(productionCompany)
         }
     }
 

@@ -11,7 +11,7 @@ import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 @Dao
 interface MoviesWithGenreDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun saveMovieWithGenre(movie: MovieWithGenre)
 
     @Query("SELECT  id, name, lang FROM genredomainmodel JOIN moviewithgenre ON id = genreId WHERE movieId = :movieId")

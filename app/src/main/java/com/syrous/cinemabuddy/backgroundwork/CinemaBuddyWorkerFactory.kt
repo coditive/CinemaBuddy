@@ -3,6 +3,7 @@ package com.syrous.cinemabuddy.backgroundwork
 import androidx.work.DelegatingWorkerFactory
 import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
+import com.syrous.cinemabuddy.utils.SystemConfigStorage
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,7 +14,8 @@ class CinemaBuddyWorkerFactory @Inject constructor(
     moviesDao: MoviesDao,
     chartedMoviesDao: ChartedMoviesDao,
     moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
-    productionCompanyDao: ProductionCompanyDao
+    productionCompanyDao: ProductionCompanyDao,
+    systemConfigStorage: SystemConfigStorage
 ): DelegatingWorkerFactory() {
     init {
         addFactory(SubscriptionWorkFactory(moviesApi,
@@ -21,7 +23,8 @@ class CinemaBuddyWorkerFactory @Inject constructor(
             moviesDao,
             chartedMoviesDao,
             moviesWithProductionCompanyDao,
-            productionCompanyDao
+            productionCompanyDao,
+            systemConfigStorage
         ))
     }
 }

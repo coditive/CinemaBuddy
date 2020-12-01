@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.work.*
 import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
+import com.syrous.cinemabuddy.utils.SystemConfigStorage
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -14,7 +15,8 @@ class SubscriptionWorkFactory (
     private val moviesDao: MoviesDao,
     private val chartedMoviesDao: ChartedMoviesDao,
     private val moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
-    private val productionCompanyDao: ProductionCompanyDao
+    private val productionCompanyDao: ProductionCompanyDao,
+    private val systemConfigStorage: SystemConfigStorage
     ): WorkerFactory() {
     override fun createWorker(
         appContext: Context,
@@ -29,6 +31,7 @@ class SubscriptionWorkFactory (
                 moviesDao,
                 moviesWithProductionCompanyDao,
                 productionCompanyDao,
+                systemConfigStorage,
                 appContext)
         else null
 

@@ -9,7 +9,7 @@ import com.syrous.cinemabuddy.data.local.model.MovieWithProductionCompany
 @Dao
 interface MoviesWithProductionCompanyDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun saveMovieWithProductionCompany(movieWithProductionCompany: MovieWithProductionCompany)
 
 

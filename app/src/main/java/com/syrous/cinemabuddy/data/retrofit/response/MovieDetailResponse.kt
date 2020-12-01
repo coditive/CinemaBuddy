@@ -32,8 +32,8 @@ data class MovieDetailResponse (
     @Json(name = "vote_count") val voteCount: Int
     )
 
-fun MovieDetailResponse.toMovieWithProductionCompany(productionCompanyId: Int)
-: MovieWithProductionCompany = MovieWithProductionCompany(
+fun MovieDetailResponse.toMovieWithProductionCompany(productionCompanyId: Int
+): MovieWithProductionCompany = MovieWithProductionCompany(
     movieId = this.id,
-    productionCompanyId = productionCompanyId
+    productionCompanyId = productionCompanyId,
 )

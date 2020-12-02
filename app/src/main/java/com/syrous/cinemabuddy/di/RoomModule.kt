@@ -57,4 +57,8 @@ class RoomModule {
     @Reusable
     @Provides
     fun provideProductionCompanyDao(cinemaBuddyDB: CinemaBuddyDB) = cinemaBuddyDB.productionCompanyDao()
+
+    @Reusable
+    @Provides
+    fun provideNotificationDao(cinemaBuddyDB: CinemaBuddyDB) = cinemaBuddyDB.notificationDao()
 }

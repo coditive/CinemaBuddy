@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 import com.syrous.cinemabuddy.domain.model.MovieDomainModel
+import java.util.*
 
 
 @Entity
@@ -13,7 +14,7 @@ data class MovieDBModel(
     val originalTitle: String,
     val overview: String?,
     val isAdult: Boolean,
-    val releaseDate: String,
+    val releaseDate: Date?,
     val posterPath: String?,
     val backdropPath: String?,
     val originalLang: String,

@@ -3,6 +3,7 @@ package com.syrous.cinemabuddy.domain.model
 
 import com.syrous.cinemabuddy.data.local.model.MovieDBModel
 import com.syrous.cinemabuddy.data.local.model.ChartedMovies
+import java.util.*
 
 
 data class MovieDomainModel (
@@ -11,7 +12,7 @@ data class MovieDomainModel (
     val originalTitle: String,
     val overview: String?,
     val isAdult: Boolean,
-    val releaseDate: String,
+    val releaseDate: Date?,
     val posterPath: String?,
     val backdropPath: String?,
     val originalLang: String,

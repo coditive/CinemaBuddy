@@ -5,9 +5,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.Data
-import androidx.work.R
 import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.BuildConfig
+import com.syrous.cinemabuddy.R
 import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.retrofit.model.toChartedMovie
 import com.syrous.cinemabuddy.data.retrofit.model.toMovieDbModel
@@ -21,6 +21,7 @@ import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.utils.NOTIFICATION_CHANNEL_ID
 import com.syrous.cinemabuddy.utils.SystemConfigStorage
 import com.syrous.cinemabuddy.utils.createNotificationChannel
+import kotlinx.coroutines.flow.collect
 import kotlin.jvm.Throws
 import kotlin.random.Random
 
@@ -69,8 +70,9 @@ class SubscriptionWorker(
            buildNotificationAndShow("Finished Subscription Saving in DB",
                "Upcoming Movies are stored in DB with production Companies", context)
 
-           systemConfigStorage.updateSubscriptionWorkerSyncEndTime(System.currentTimeMillis())
+        //TODO("Generate Notification Table here to enqueue notifications and then notificationWorker will send the notification.")
 
+           systemConfigStorage.updateSubscriptionWorkerSyncEndTime(System.currentTimeMillis())
            Result.success()
         } catch (e: Exception) {
             val failureOutput = Data.Builder()

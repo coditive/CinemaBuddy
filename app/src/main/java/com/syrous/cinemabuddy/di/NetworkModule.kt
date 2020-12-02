@@ -2,7 +2,9 @@ package com.syrous.cinemabuddy.di
 
 import android.app.Application
 import android.content.Context
+import com.squareup.moshi.Moshi
 import com.syrous.cinemabuddy.BuildConfig
+import com.syrous.cinemabuddy.data.retrofit.moshiAdapters.DateJsonAdapterFactory
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import dagger.Module
 import dagger.Provides
@@ -35,9 +37,16 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient): MoviesApi = Retrofit.Builder()
+    fun provideMoshi(): Moshi = Moshi
+        .Builder()
+        .add(DateJsonAdapterFactory())
+        .build()
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): MoviesApi = Retrofit.Builder()
         .baseUrl(BuildConfig.REDIRECT_URI)
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
         .client(okHttpClient)
         .build()
         .create(MoviesApi::class.java)

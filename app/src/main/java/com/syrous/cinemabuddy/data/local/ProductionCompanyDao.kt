@@ -17,6 +17,9 @@ interface ProductionCompanyDao {
     @Query("UPDATE productioncompanydomainmodel SET isSubscribed = 0 WHERE id = :prodCompId")
     suspend fun removeSubscriptionForCompany(prodCompId: Int)
 
-    @Query("SELECT * FROM moviedbmodel WHERE id IN (SELECT movieId FROM chartedmovies WHERE chartType = 3 AND movieId IN (SELECT DISTINCT movieId FROM moviewithproductioncompany WHERE productionCompanyId = :prodCompId))")
-    fun getUpcomingMoviesForACompany(prodCompId: Int): Flow<List<MovieDBModel>>
+    @Query("SELECT * FROM moviedbmodel WHERE id IN (SELECT movieId FROM chartedmovies WHERE chartType = 3 AND movieId IN (SELECT movieId FROM moviewithproductioncompany WHERE productionCompanyId IN (SELECT productionCompanyId FROM productioncompanydomainmodel WHERE isSubscribed = 1)))")
+    fun getUpcomingMoviesForSubscribedCompanies(): Flow<List<MovieDBModel>>
+
+    @Query("SELECT * FROM productioncompanydomainmodel WHERE id IN (SELECT productionCompanyId FROM MovieWithProductionCompany WHERE movieId = :movieId)")
+    suspend fun getProductionCompanyForAMovie(movieId: Int): ProductionCompanyDomainModel
 }

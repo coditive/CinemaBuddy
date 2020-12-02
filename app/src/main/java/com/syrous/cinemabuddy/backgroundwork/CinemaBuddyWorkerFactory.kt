@@ -15,6 +15,7 @@ class CinemaBuddyWorkerFactory @Inject constructor(
     chartedMoviesDao: ChartedMoviesDao,
     moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
     productionCompanyDao: ProductionCompanyDao,
+    notificationDao: NotificationDao,
     systemConfigStorage: SystemConfigStorage
 ): DelegatingWorkerFactory() {
     init {
@@ -25,6 +26,11 @@ class CinemaBuddyWorkerFactory @Inject constructor(
             moviesWithProductionCompanyDao,
             productionCompanyDao,
             systemConfigStorage
+        ))
+
+        addFactory(NotificationWorkFactory(
+            moviesDao,
+            notificationDao
         ))
     }
 }

@@ -25,11 +25,14 @@ class CinemaBuddyWorkerFactory @Inject constructor(
             chartedMoviesDao,
             moviesWithProductionCompanyDao,
             productionCompanyDao,
-            systemConfigStorage
+            systemConfigStorage,
+            notificationDao
         ))
 
         addFactory(NotificationWorkFactory(
             moviesDao,
+            productionCompanyDao,
+            systemConfigStorage,
             notificationDao
         ))
     }

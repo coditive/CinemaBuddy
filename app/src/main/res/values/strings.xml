@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Cinema Buddy</string>
-    <string name="channel_name">General</string>
+    <string name="debug_channel_name">Debug</string>
+    <string name="sub_channel_name">Sub</string>
 </resources>

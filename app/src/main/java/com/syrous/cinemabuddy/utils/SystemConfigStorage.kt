@@ -18,6 +18,12 @@ class SystemConfigStorage @Inject constructor(
             .apply()
     }
 
+    fun getSubscriptionWorkerSyncStartTime(): Long =
+        storage.getLong(SUBSCRIPTION_WORKER_SYNC_START_TIME, 0)
+
+    fun getSubscriptionWorkerSyncEndTime(): Long =
+        storage.getLong(SUBSCRIPTION_WORKER_SYNC_END_TIME, 0)
+
     fun getUserLang(): String = storage.getString(USER_LANGUAGE, "en-US")!!
 
 

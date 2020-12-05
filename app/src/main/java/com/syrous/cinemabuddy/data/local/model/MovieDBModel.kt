@@ -25,7 +25,8 @@ data class MovieDBModel(
     var createdAt: Long
 )
 
-fun MovieDBModel.toMovieDomainModel(genreList: List<GenreDomainModel>): MovieDomainModel = MovieDomainModel(
+fun MovieDBModel.toMovieDomainModel(genreList: List<GenreDomainModel>)
+: MovieDomainModel = MovieDomainModel(
     id = id,
     title = title,
     originalTitle = originalTitle,
@@ -41,4 +42,13 @@ fun MovieDBModel.toMovieDomainModel(genreList: List<GenreDomainModel>): MovieDom
     popularity = popularity,
     voteCount = voteCount,
     createdAt = createdAt
+)
+
+fun MovieDBModel.toNotificationDBModel(productionCompanyId: Int, movieId: Int, timestamp: Long)
+: NotificationDBModel = NotificationDBModel(
+    id = null,
+    productionCompanyId = productionCompanyId,
+    movieId = movieId,
+    timestamp = timestamp,
+    isNotified = false
 )

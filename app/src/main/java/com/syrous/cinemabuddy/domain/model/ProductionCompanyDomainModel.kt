@@ -11,5 +11,5 @@ data class ProductionCompanyDomainModel (
     val name: String,
     val logoPath: String?,
     val originCountry: String,
-    val isSubscribed: Boolean
+    var isSubscribed: Boolean
     )

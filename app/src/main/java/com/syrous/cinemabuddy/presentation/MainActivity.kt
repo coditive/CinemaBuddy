@@ -9,6 +9,7 @@ import androidx.work.WorkManager
 import com.syrous.cinemabuddy.CinemaBuddyApplication
 import com.syrous.cinemabuddy.R
 import com.syrous.cinemabuddy.backgroundwork.SubscriptionWorker
+import com.syrous.cinemabuddy.backgroundwork.enqueueNotificationWorker
 import com.syrous.cinemabuddy.backgroundwork.enqueueSubscriptionWorker
 import kotlinx.coroutines.*
 import javax.inject.Inject
@@ -35,18 +36,32 @@ class MainActivity: AppCompatActivity() {
 
         viewModel.getMovieDetails()
 
-        val workRequest = this.enqueueSubscriptionWorker()
+        val subWorkRequest = this.enqueueSubscriptionWorker()
 
         WorkManager.getInstance(this)
-            .getWorkInfoByIdLiveData(workRequest.id)
+            .getWorkInfoByIdLiveData(subWorkRequest.id)
             .observe(this) {
                 if((it != null)) {
                     val state = it.state
                     val myOutputData = it.tags
-                    Log.d("WorkManagerInfoState", state.toString())
-                    Log.d("WorkManagerInfo", it.toString())
+                    Log.d("SubWorkManagerInfoState", state.toString())
+                    Log.d("SubWorkManagerInfo", it.toString())
                 }
             }
+
+        val notificationWorkRequest = this.enqueueNotificationWorker()
+
+        WorkManager.getInstance(this)
+            .getWorkInfoByIdLiveData(notificationWorkRequest.id)
+            .observe(this) {
+                if((it != null)) {
+                    val state = it.state
+                    val myOutputData = it.tags
+                    Log.d("NotifyWorkManagerState", state.toString())
+                    Log.d("NotifyWorkManagerInfo", it.toString())
+                }
+            }
+
     }
 
     override fun onDestroy() {

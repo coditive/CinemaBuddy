@@ -16,7 +16,8 @@ class SubscriptionWorkFactory (
     private val chartedMoviesDao: ChartedMoviesDao,
     private val moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
     private val productionCompanyDao: ProductionCompanyDao,
-    private val systemConfigStorage: SystemConfigStorage
+    private val systemConfigStorage: SystemConfigStorage,
+    private val notificationDao: NotificationDao
     ): WorkerFactory() {
     override fun createWorker(
         appContext: Context,
@@ -32,6 +33,7 @@ class SubscriptionWorkFactory (
                 moviesWithProductionCompanyDao,
                 productionCompanyDao,
                 systemConfigStorage,
+                notificationDao,
                 appContext)
         else null
 
@@ -45,7 +47,7 @@ fun Context.enqueueSubscriptionWorker(): WorkRequest {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) constraints.setRequiresDeviceIdle(true)
 
     val workRequest = PeriodicWorkRequestBuilder<SubscriptionWorker>(1, TimeUnit.DAYS)
-        .setConstraints(constraints.build())
+//        .setConstraints(constraints.build())
         .addTag(SubscriptionWorker.SUBSCRIPTION_TAG)
         .build()
 

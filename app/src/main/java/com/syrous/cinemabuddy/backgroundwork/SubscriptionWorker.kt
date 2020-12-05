@@ -9,6 +9,7 @@ import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.BuildConfig
 import com.syrous.cinemabuddy.R
 import com.syrous.cinemabuddy.data.local.*
+import com.syrous.cinemabuddy.data.local.model.toNotificationDBModel
 import com.syrous.cinemabuddy.data.retrofit.model.toChartedMovie
 import com.syrous.cinemabuddy.data.retrofit.model.toMovieDbModel
 import com.syrous.cinemabuddy.data.retrofit.model.toMovieWithGenre
@@ -22,6 +23,7 @@ import com.syrous.cinemabuddy.utils.NOTIFICATION_CHANNEL_ID
 import com.syrous.cinemabuddy.utils.SystemConfigStorage
 import com.syrous.cinemabuddy.utils.createNotificationChannel
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlin.jvm.Throws
 import kotlin.random.Random
 
@@ -34,8 +36,9 @@ class SubscriptionWorker(
     private val moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
     private val productionCompanyDao: ProductionCompanyDao,
     private val systemConfigStorage: SystemConfigStorage,
+    private val notificationDao: NotificationDao,
     private val context: Context
-    ): CoroutineWorker(context, workerParameters) {
+    ): BaseWorker(workerParameters, context) {
     override suspend fun doWork(): Result {
        return try {
            systemConfigStorage.updateSubscriptionWorkerSyncStartTime(System.currentTimeMillis())
@@ -67,34 +70,39 @@ class SubscriptionWorker(
                }
            }
 
-           buildNotificationAndShow("Finished Subscription Saving in DB",
+           buildDebugNotificationAndShow("Finished Subscription Saving in DB",
                "Upcoming Movies are stored in DB with production Companies", context)
 
-        //TODO("Generate Notification Table here to enqueue notifications and then notificationWorker will send the notification.")
+           productionCompanyDao.getSubscribedProductionCompaniesList().collect {
+               prodComp ->
+               if(prodComp != null) {
+                   val moviesList =
+                       productionCompanyDao.getUpcomingMoviesForAProductionCompany(prodComp.id)
+                   for (movie in moviesList) {
+                       notificationDao.saveNotification(
+                           movie.toNotificationDBModel(
+                               prodComp.id,
+                               movie.id,
+                               movie.createdAt
+                           )
+                       )
+                   }
+               }
+           }
 
            systemConfigStorage.updateSubscriptionWorkerSyncEndTime(System.currentTimeMillis())
            Result.success()
-        } catch (e: Exception) {
+       } catch (e: Exception) {
             val failureOutput = Data.Builder()
                 .putString(FAILURE_EXCEPTION, e.message)
                 .build()
 
-           buildNotificationAndShow("Error In Subscription Worker", e.message!!, context)
+           buildDebugNotificationAndShow("Error In Subscription Worker", e.message!!, context)
 
             Result.failure(failureOutput)
         }
     }
 
-    private fun buildNotificationAndShow(title: String, message: String, context: Context, id: Int = Random.nextInt()) {
-        context.createNotificationChannel()
-        val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.notification_icon_background)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-        NotificationManagerCompat.from(context).notify(id, builder.build())
-    }
 
 
     @Throws(Exception::class)
@@ -121,6 +129,5 @@ class SubscriptionWorker(
 
     companion object {
         const val SUBSCRIPTION_TAG = "subscription_tag"
-        const val FAILURE_EXCEPTION = "failure_exception"
     }
 }

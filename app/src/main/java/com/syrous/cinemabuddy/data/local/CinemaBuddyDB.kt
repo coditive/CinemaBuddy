@@ -10,7 +10,7 @@ import com.syrous.cinemabuddy.domain.model.ProductionCompanyDomainModel
 
 @Database(entities = [MovieDBModel::class, ChartedMovies::class, GenreDomainModel::class,
     MovieWithGenre::class, ProductionCompanyDomainModel::class, MovieWithProductionCompany::class,
-    Notification::class],
+    NotificationDBModel::class],
     version = 1,
     exportSchema = false)
 @TypeConverters(MovieTypeConverter::class, DateTypeConverter::class)

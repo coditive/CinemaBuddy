@@ -37,16 +37,16 @@ fun Context.enqueueNotificationWorker(): WorkRequest {
     val constraints = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
 
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) constraints.setRequiresDeviceIdle(true)
+//    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) constraints.setRequiresDeviceIdle(true)
 
-    val workRequest = PeriodicWorkRequestBuilder<SubscriptionWorker>(1, TimeUnit.HOURS)
+    val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.HOURS)
 //        .setConstraints(constraints.build())
         .addTag(NotificationWorker.NOTIFICATION_TAG)
         .build()
 
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
         NotificationWorker.NOTIFICATION_TAG,
-        ExistingPeriodicWorkPolicy.KEEP,
+        ExistingPeriodicWorkPolicy.REPLACE,
         workRequest)
     return workRequest
 }

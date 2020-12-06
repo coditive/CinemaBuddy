@@ -36,30 +36,12 @@ class MainActivity: AppCompatActivity() {
 
         viewModel.getMovieDetails()
 
-        val subWorkRequest = this.enqueueSubscriptionWorker()
-
-        WorkManager.getInstance(this)
-            .getWorkInfoByIdLiveData(subWorkRequest.id)
-            .observe(this) {
-                if((it != null)) {
-                    val state = it.state
-                    val myOutputData = it.tags
-                    Log.d("SubWorkManagerInfoState", state.toString())
-                    Log.d("SubWorkManagerInfo", it.toString())
-                }
-            }
-
         val notificationWorkRequest = this.enqueueNotificationWorker()
 
         WorkManager.getInstance(this)
             .getWorkInfoByIdLiveData(notificationWorkRequest.id)
             .observe(this) {
-                if((it != null)) {
-                    val state = it.state
-                    val myOutputData = it.tags
-                    Log.d("NotifyWorkManagerState", state.toString())
                     Log.d("NotifyWorkManagerInfo", it.toString())
-                }
             }
 
     }

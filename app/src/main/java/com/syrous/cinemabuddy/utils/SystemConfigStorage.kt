@@ -7,15 +7,19 @@ class SystemConfigStorage @Inject constructor(
     private val storage: SharedPreferences
 ) {
     fun updateSubscriptionWorkerSyncStartTime(time: Long) {
-        storage.edit()
-            .putLong(SUBSCRIPTION_WORKER_SYNC_START_TIME, time)
-            .apply()
+        synchronized(storage) {
+            storage.edit()
+                .putLong(SUBSCRIPTION_WORKER_SYNC_START_TIME, time)
+                .apply()
+        }
     }
 
     fun updateSubscriptionWorkerSyncEndTime(time: Long) {
-        storage.edit()
-            .putLong(SUBSCRIPTION_WORKER_SYNC_END_TIME, time)
-            .apply()
+        synchronized(storage) {
+            storage.edit()
+                .putLong(SUBSCRIPTION_WORKER_SYNC_END_TIME, time)
+                .apply()
+        }
     }
 
     fun getSubscriptionWorkerSyncStartTime(): Long =
@@ -25,7 +29,5 @@ class SystemConfigStorage @Inject constructor(
         storage.getLong(SUBSCRIPTION_WORKER_SYNC_END_TIME, 0)
 
     fun getUserLang(): String = storage.getString(USER_LANGUAGE, "en-US")!!
-
-
 
 }

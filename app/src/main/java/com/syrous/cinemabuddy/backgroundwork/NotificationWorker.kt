@@ -1,6 +1,7 @@
 package com.syrous.cinemabuddy.backgroundwork
 
 import android.content.Context
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Data
@@ -10,6 +11,7 @@ import com.syrous.cinemabuddy.data.local.MoviesDao
 import com.syrous.cinemabuddy.data.local.NotificationDao
 import com.syrous.cinemabuddy.data.local.ProductionCompanyDao
 import com.syrous.cinemabuddy.utils.NOTIFICATION_CHANNEL_ID
+import com.syrous.cinemabuddy.utils.SUBSCRIPTION_NOTIFICATION_CHANNEL_ID
 import com.syrous.cinemabuddy.utils.SystemConfigStorage
 import com.syrous.cinemabuddy.utils.createSubscriptionNotificationChannel
 import kotlinx.coroutines.flow.collect
@@ -25,15 +27,10 @@ class NotificationWorker(
 ): BaseWorker(workerParameters, context) {
     override suspend fun doWork(): Result {
         return try {
-
             productionCompanyDao.getSubscribedProductionCompaniesList().collect { prodComp ->
                 if (prodComp != null) {
                     val notificationList = notificationDao
-                        .getUnNotifiedNotificationWithInTimeRangeForAComp(
-                            systemConfigStorage.getSubscriptionWorkerSyncStartTime(),
-                            systemConfigStorage.getSubscriptionWorkerSyncEndTime(),
-                            prodComp.id
-                        )
+                        .getUnNotifiedNotificationWithInTimeRangeForAComp(prodComp.id)
 
                     if (notificationList != null) {
                         for(notification in notificationList) {
@@ -42,12 +39,12 @@ class NotificationWorker(
                                 "${prodComp.name}'s upcoming movie is ${movie.originalTitle}"
                                 , context)
 
-                            notificationDao.updateNotificationNotified(notification.id!!)
+                            notificationDao.updateNotificationNotified(notification.id)
                         }
                     }
                 }
-            }
 
+            }
 
             Result.success()
         } catch (e: Exception) {
@@ -63,9 +60,11 @@ class NotificationWorker(
 
     }
 
-    private fun buildSubNotificationAndShow(title: String, message: String, context: Context, id: Int = Random.nextInt()) {
+    private fun buildSubNotificationAndShow(title: String, message: String,
+                                            context: Context,
+                                            id: Int = Random.nextInt()) {
         context.createSubscriptionNotificationChannel()
-        val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, SUBSCRIPTION_NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.notification_icon_background)
             .setContentTitle(title)
             .setContentText(message)
@@ -75,6 +74,6 @@ class NotificationWorker(
     }
 
     companion object {
-        const val NOTIFICATION_TAG = "subscription_tag"
+        const val NOTIFICATION_TAG = "notification_tag"
     }
 }

@@ -51,7 +51,11 @@ fun Context.enqueueSubscriptionWorker(): WorkRequest {
         .addTag(SubscriptionWorker.SUBSCRIPTION_TAG)
         .build()
 
-    WorkManager.getInstance(this).enqueue(workRequest)
+    WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+        SubscriptionWorker.SUBSCRIPTION_TAG,
+        ExistingPeriodicWorkPolicy.REPLACE,
+        workRequest
+    )
     return workRequest
 }
 

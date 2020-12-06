@@ -5,6 +5,8 @@ import androidx.room.PrimaryKey
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 import com.syrous.cinemabuddy.domain.model.MovieDomainModel
 import java.util.*
+import kotlin.random.Random
+import kotlin.random.Random.Default.nextInt
 
 
 @Entity
@@ -44,11 +46,10 @@ fun MovieDBModel.toMovieDomainModel(genreList: List<GenreDomainModel>)
     createdAt = createdAt
 )
 
-fun MovieDBModel.toNotificationDBModel(productionCompanyId: Int, movieId: Int, timestamp: Long)
+fun MovieDBModel.toNotificationDBModel(productionCompanyId: Int)
 : NotificationDBModel = NotificationDBModel(
-    id = null,
     productionCompanyId = productionCompanyId,
-    movieId = movieId,
-    timestamp = timestamp,
+    movieId = this.id,
+    timestamp = this.createdAt,
     isNotified = false
 )

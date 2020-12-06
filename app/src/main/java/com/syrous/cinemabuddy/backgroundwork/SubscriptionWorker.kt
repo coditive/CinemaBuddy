@@ -70,6 +70,8 @@ class SubscriptionWorker(
                }
            }
 
+           systemConfigStorage.updateSubscriptionWorkerSyncEndTime(System.currentTimeMillis())
+
            buildDebugNotificationAndShow("Finished Subscription Saving in DB",
                "Upcoming Movies are stored in DB with production Companies", context)
 
@@ -80,17 +82,11 @@ class SubscriptionWorker(
                        productionCompanyDao.getUpcomingMoviesForAProductionCompany(prodComp.id)
                    for (movie in moviesList) {
                        notificationDao.saveNotification(
-                           movie.toNotificationDBModel(
-                               prodComp.id,
-                               movie.id,
-                               movie.createdAt
-                           )
+                           movie.toNotificationDBModel(prodComp.id)
                        )
                    }
                }
            }
-
-           systemConfigStorage.updateSubscriptionWorkerSyncEndTime(System.currentTimeMillis())
            Result.success()
        } catch (e: Exception) {
             val failureOutput = Data.Builder()
@@ -130,4 +126,6 @@ class SubscriptionWorker(
     companion object {
         const val SUBSCRIPTION_TAG = "subscription_tag"
     }
+
+    //TODO : Change subscription worker only to identify subscribed movies
 }

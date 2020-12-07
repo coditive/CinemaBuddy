@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkRequest
 import com.syrous.cinemabuddy.BuildConfig
-import com.syrous.cinemabuddy.backgroundwork.enqueueSubscriptionWorker
 import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 import com.syrous.cinemabuddy.domain.model.MovieDomainModel

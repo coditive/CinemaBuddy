@@ -1,8 +1,8 @@
-package com.syrous.cinemabuddy.backgroundwork
+package com.syrous.cinemabuddy.backgroundwork.notification
 
 import android.content.Context
-import android.os.Build
 import androidx.work.*
+import com.syrous.cinemabuddy.backgroundwork.notification.NotificationWorker
 import com.syrous.cinemabuddy.data.local.MoviesDao
 import com.syrous.cinemabuddy.data.local.NotificationDao
 import com.syrous.cinemabuddy.data.local.ProductionCompanyDao
@@ -46,7 +46,7 @@ fun Context.enqueueNotificationWorker(): WorkRequest {
 
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
         NotificationWorker.NOTIFICATION_TAG,
-        ExistingPeriodicWorkPolicy.REPLACE,
+        ExistingPeriodicWorkPolicy.KEEP,
         workRequest)
     return workRequest
 }

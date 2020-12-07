@@ -29,7 +29,7 @@ class DateJsonAdapter: JsonAdapter<Date>() {
     }
 
     override fun toJson(writer: JsonWriter, value: Date?) {
-        TODO("Not yet implemented")
+        //No-op
     }
 
     companion object {

@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.backgroundwork
+package com.syrous.cinemabuddy.backgroundwork.subscription
 
 import android.content.Context
 import androidx.core.app.NotificationCompat
@@ -8,6 +8,7 @@ import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.BuildConfig
 import com.syrous.cinemabuddy.R
+import com.syrous.cinemabuddy.backgroundwork.common.BaseWorker
 import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.local.model.toNotificationDBModel
 import com.syrous.cinemabuddy.data.retrofit.model.toChartedMovie

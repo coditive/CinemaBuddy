@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.backgroundwork
+package com.syrous.cinemabuddy.backgroundwork.notification
 
 import android.content.Context
 import android.util.Log
@@ -7,6 +7,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.R
+import com.syrous.cinemabuddy.backgroundwork.common.BaseWorker
 import com.syrous.cinemabuddy.data.local.MoviesDao
 import com.syrous.cinemabuddy.data.local.NotificationDao
 import com.syrous.cinemabuddy.data.local.ProductionCompanyDao
@@ -76,4 +77,6 @@ class NotificationWorker(
     companion object {
         const val NOTIFICATION_TAG = "notification_tag"
     }
+
+    //TODO : change this worker implementation to use alarm manager for timing this work.
 }

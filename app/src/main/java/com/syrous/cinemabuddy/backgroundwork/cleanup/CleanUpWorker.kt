@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.backgroundwork
+package com.syrous.cinemabuddy.backgroundwork.cleanup
 
 import android.content.Context
 import androidx.work.CoroutineWorker

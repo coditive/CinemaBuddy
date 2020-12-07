@@ -3,14 +3,10 @@ package com.syrous.cinemabuddy.presentation
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.asLiveData
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.syrous.cinemabuddy.CinemaBuddyApplication
 import com.syrous.cinemabuddy.R
-import com.syrous.cinemabuddy.backgroundwork.SubscriptionWorker
-import com.syrous.cinemabuddy.backgroundwork.enqueueNotificationWorker
-import com.syrous.cinemabuddy.backgroundwork.enqueueSubscriptionWorker
+import com.syrous.cinemabuddy.backgroundwork.notification.enqueueNotificationWorker
 import kotlinx.coroutines.*
 import javax.inject.Inject
 

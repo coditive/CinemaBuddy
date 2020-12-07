@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.backgroundwork
+package com.syrous.cinemabuddy.backgroundwork.common
 
 import android.content.Context
 import androidx.core.app.NotificationCompat

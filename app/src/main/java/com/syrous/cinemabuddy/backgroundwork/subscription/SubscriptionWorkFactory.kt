@@ -1,13 +1,13 @@
-package com.syrous.cinemabuddy.backgroundwork
+package com.syrous.cinemabuddy.backgroundwork.subscription
 
 import android.content.Context
 import android.os.Build
 import androidx.work.*
+import com.syrous.cinemabuddy.backgroundwork.subscription.SubscriptionWorker
 import com.syrous.cinemabuddy.data.local.*
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.utils.SystemConfigStorage
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 class SubscriptionWorkFactory (
     private val moviesApi: MoviesApi,
@@ -53,7 +53,7 @@ fun Context.enqueueSubscriptionWorker(): WorkRequest {
 
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
         SubscriptionWorker.SUBSCRIPTION_TAG,
-        ExistingPeriodicWorkPolicy.REPLACE,
+        ExistingPeriodicWorkPolicy.KEEP,
         workRequest
     )
     return workRequest

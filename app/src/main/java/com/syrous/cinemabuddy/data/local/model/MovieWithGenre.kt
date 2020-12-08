@@ -2,10 +2,12 @@ package com.syrous.cinemabuddy.data.local.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 
 
-@Entity(primaryKeys = ["movieId", "genreId"],
+@Entity(indices = [Index(value = arrayOf("genreId"), unique = true)],
+    primaryKeys = ["movieId", "genreId"],
     foreignKeys = [
         ForeignKey(
             entity = MovieDBModel::class,

@@ -1,5 +1,6 @@
-package com.syrous.cinemabuddy.presentation.home
+package com.syrous.cinemabuddy.presentation.home.moviecarousel
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -17,10 +18,13 @@ class MovieCarouselAdapter(
         fun onMovieClicked(movie: MovieDomainModel)
     }
 
-    inner class MovieViewHolder(viewMVC: MovieListItemViewMVC)
+    inner class MovieViewHolder(private val viewMVC: MovieListItemViewMVC)
         : RecyclerView.ViewHolder(viewMVC.getRootView()) {
-
-    }
+            fun bindMovieToHolder(movie: MovieDomainModel) {
+                Log.d("MovieViewHolder", "${movie.title} Movie is binded to vh")
+                viewMVC.bindMovie(movie)
+            }
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
        val viewMvc = viewMVCFactory.getMovieListItemViewMVC(parent)
@@ -29,7 +33,8 @@ class MovieCarouselAdapter(
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        Log.d("MovieAdapter", "${getItem(position).title} Movie is binded to vh")
+        holder.bindMovieToHolder(getItem(position))
     }
 
 
@@ -42,20 +47,12 @@ class MovieCarouselAdapter(
            override fun areItemsTheSame(
                oldItem: MovieDomainModel,
                newItem: MovieDomainModel
-           ): Boolean {
-               TODO("Not yet implemented")
-           }
+           ): Boolean = oldItem.id == newItem.id
 
            override fun areContentsTheSame(
                oldItem: MovieDomainModel,
                newItem: MovieDomainModel
-           ): Boolean {
-               TODO("Not yet implemented")
-           }
-
+           ): Boolean = oldItem.createdAt == newItem.createdAt
        }
     }
-
-    //TODO: Change this to common implementation for movie Carousel which then can be provided from viewMVCFactory
-
 }

@@ -7,7 +7,7 @@ import com.syrous.cinemabuddy.presentation.common.views.ObservableViewMVC
 
 interface HomeViewMVC: ObservableViewMVC<HomeViewMVC.Listener>{
     interface Listener {
-        fun onMovieClicked(chartType: ChartType, movie: MovieDomainModel)
+        fun onMovieClicked(movie: MovieDomainModel)
     }
 
     fun bindTopRatedMovies(movieList : List<MovieDomainModel>)

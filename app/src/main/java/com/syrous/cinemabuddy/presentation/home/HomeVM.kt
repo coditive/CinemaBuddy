@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.presentation
+package com.syrous.cinemabuddy.presentation.home
 
 import android.app.Application
 import android.content.Context

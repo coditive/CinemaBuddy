@@ -21,7 +21,6 @@ class MovieCarouselAdapter(
     inner class MovieViewHolder(private val viewMVC: MovieListItemViewMVC)
         : RecyclerView.ViewHolder(viewMVC.getRootView()) {
             fun bindMovieToHolder(movie: MovieDomainModel) {
-                Log.d("MovieViewHolder", "${movie.title} Movie is binded to vh")
                 viewMVC.bindMovie(movie)
             }
         }
@@ -33,7 +32,6 @@ class MovieCarouselAdapter(
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        Log.d("MovieAdapter", "${getItem(position).title} Movie is binded to vh")
         holder.bindMovieToHolder(getItem(position))
     }
 

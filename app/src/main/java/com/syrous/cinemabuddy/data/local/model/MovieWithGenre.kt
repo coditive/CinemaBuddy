@@ -13,7 +13,7 @@ import com.syrous.cinemabuddy.domain.model.GenreDomainModel
             entity = MovieDBModel::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("movieId"),
-            onDelete = ForeignKey.NO_ACTION
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = GenreDomainModel::class,

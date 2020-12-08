@@ -10,7 +10,7 @@ import com.syrous.cinemabuddy.domain.model.ChartType
         entity = MovieDBModel::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("movieId"),
-        onDelete = ForeignKey.NO_ACTION
+        onDelete = ForeignKey.CASCADE
     )
 ],
     primaryKeys = ["movieId", "chartType"]

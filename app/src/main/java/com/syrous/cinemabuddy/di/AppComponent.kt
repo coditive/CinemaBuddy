@@ -12,7 +12,8 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [NetworkModule::class, RepoModule::class, AppSubcomponents::class, RoomModule::class, WorkManagerModule::class])
+@Component(modules = [NetworkModule::class, UseCaseModule::class, AppSubcomponents::class,
+    RoomModule::class, WorkManagerModule::class])
 interface AppComponent {
     @Component.Factory
     interface Factory {

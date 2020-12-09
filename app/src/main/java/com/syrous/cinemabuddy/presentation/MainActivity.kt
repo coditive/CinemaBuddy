@@ -2,13 +2,17 @@ package com.syrous.cinemabuddy.presentation
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.asLiveData
 import com.syrous.cinemabuddy.CinemaBuddyApplication
+import com.syrous.cinemabuddy.domain.model.ChartType
+import com.syrous.cinemabuddy.domain.model.Result
 import com.syrous.cinemabuddy.presentation.common.ViewMVCFactory
 import com.syrous.cinemabuddy.presentation.common.controllers.BaseActivity
 import com.syrous.cinemabuddy.presentation.home.HomeVM
 import com.syrous.cinemabuddy.presentation.home.HomeViewMVC
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @InternalCoroutinesApi
@@ -33,13 +37,16 @@ class MainActivity: BaseActivity() {
     override fun onStart() {
         super.onStart()
 
-        viewModel.getTheGenreList()
-        viewModel.getPopularMovie()
 
-        viewModel.observePopularMovies().asLiveData().observe(this){
-            moviesList ->
-             viewMVC.bindPopularMovies(moviesList)
+        viewModel.setChartedMovies(ChartType.UPCOMING)
+        viewModel.flowOfChartedMovies.asLiveData().observe(this) {
+            when(it) {
+                Result.NotInitialized -> viewModel.loadChartedMoviesFromLocalStorage()
+                is Result.Success -> viewMVC.bindPopularMovies(it.data)
+                is Result.Error -> Toast.makeText(this, "Error: ${it.exception} occurred", Toast.LENGTH_SHORT).show()
+                Result.Loading -> Toast.makeText(this, "Data is loading", Toast.LENGTH_SHORT).show()
+                Result.DoneLoading -> Toast.makeText(this, "Data is loaded", Toast.LENGTH_SHORT).show()
+            }
         }
-
     }
 }

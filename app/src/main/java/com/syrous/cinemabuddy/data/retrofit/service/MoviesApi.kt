@@ -32,7 +32,7 @@ interface MoviesApi {
     ): MovieResponse
 
     @GET("movie/upcoming")
-    suspend fun getUpcomingMovies(
+    suspend fun getUpcomingMoviesList(
             @Query("api_key") apiKey: String,
             @Query("language")lang: String,
             @Query("page") page: Int,

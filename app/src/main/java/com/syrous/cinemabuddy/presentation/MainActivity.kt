@@ -37,8 +37,20 @@ class MainActivity: BaseActivity() {
     override fun onStart() {
         super.onStart()
 
+        viewModel.setChartedMovies(ChartType.TOP_RATED)
+        viewModel.flowOfGenreList.asLiveData().observe(this) {
+            when(it) {
+                Result.NotInitialized -> viewModel.executeFetchGenreListUseCase()
+                is Result.Success -> TODO()
+                is Result.Error -> Toast.makeText(this, "Error: ${it.exception} occurred", Toast.LENGTH_SHORT).show()
+                Result.Loading -> Toast.makeText(this, "Data is loading", Toast.LENGTH_SHORT).show()
+                Result.DoneLoading -> {
+                    viewModel.executeFetchChartedMoviesUseCase()
+                }
+            }
+        }
 
-        viewModel.setChartedMovies(ChartType.UPCOMING)
+
         viewModel.flowOfChartedMovies.asLiveData().observe(this) {
             when(it) {
                 Result.NotInitialized -> viewModel.loadChartedMoviesFromLocalStorage()
@@ -48,5 +60,10 @@ class MainActivity: BaseActivity() {
                 Result.DoneLoading -> Toast.makeText(this, "Data is loaded", Toast.LENGTH_SHORT).show()
             }
         }
+
+
+
+
+
     }
 }

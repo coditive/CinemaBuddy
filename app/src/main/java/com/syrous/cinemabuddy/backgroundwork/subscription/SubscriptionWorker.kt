@@ -44,7 +44,7 @@ class SubscriptionWorker(
        return try {
            systemConfigStorage.updateSubscriptionWorkerSyncStartTime(System.currentTimeMillis())
 
-           val result = moviesApi.getUpcomingMovies(BuildConfig.API_KEY_V3,
+           val result = moviesApi.getUpcomingMoviesList(BuildConfig.API_KEY_V3,
                systemConfigStorage.getUserLang(),1, null)
 
            saveMoviesToLocalStorage(result, ChartType.UPCOMING)
@@ -58,7 +58,7 @@ class SubscriptionWorker(
 
 
            for(i in 2..result.totalPages) {
-                val response = moviesApi.getUpcomingMovies(BuildConfig.API_KEY_V3,
+                val response = moviesApi.getUpcomingMoviesList(BuildConfig.API_KEY_V3,
                 systemConfigStorage.getUserLang(), i, null)
 
                saveMoviesToLocalStorage(response, ChartType.UPCOMING)

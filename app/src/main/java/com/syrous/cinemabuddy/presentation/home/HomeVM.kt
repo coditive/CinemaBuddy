@@ -24,6 +24,18 @@ class HomeVM @Inject constructor(
         }
     }
 
+    fun executeFetchGenreListUseCase() {
+        viewModelScope.launch {
+            fetchGenreListUseCase.execute()
+        }
+    }
+
+    fun loadGenreListFromLocalStorage() {
+        viewModelScope.launch {
+            fetchGenreListUseCase.getGenreList()
+        }
+    }
+
     fun loadChartedMoviesFromLocalStorage() {
         viewModelScope.launch {
             fetchChartedMoviesUseCase.loadChartedMoviesFromLocalStorage()
@@ -35,7 +47,5 @@ class HomeVM @Inject constructor(
             fetchChartedMoviesUseCase.setChartType(chartType)
         }
     }
-
-
 
 }

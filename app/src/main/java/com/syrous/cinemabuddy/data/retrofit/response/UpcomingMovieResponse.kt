@@ -13,3 +13,10 @@ data class UpcomingMovieResponse (
     @Json(name = "total_pages") val totalPages: Int,
     @Json(name = "total_results")val totalResults: Int
     )
+
+fun UpcomingMovieResponse.toMovieResponse(): MovieResponse = MovieResponse(
+    page = page,
+    movieModelList = movieModelList,
+    totalPages = totalPages,
+    totalResults = totalResults
+)

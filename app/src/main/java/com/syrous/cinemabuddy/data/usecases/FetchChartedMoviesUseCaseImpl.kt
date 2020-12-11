@@ -10,6 +10,7 @@ import com.syrous.cinemabuddy.data.retrofit.model.toMovieWithGenre
 import com.syrous.cinemabuddy.data.retrofit.model.toProductionCompanyDomainModel
 import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
 import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
+import com.syrous.cinemabuddy.data.retrofit.response.toMovieResponse
 import com.syrous.cinemabuddy.data.retrofit.response.toMovieWithProductionCompany
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.ChartType
@@ -38,9 +39,9 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
     private val _flowOfChartedMovies =
         MutableStateFlow<Result<List<MovieDomainModel>>>(Result.NotInitialized)
 
-    private val _flowOfChartType = MutableStateFlow(UPCOMING)
+    private val _flowOfChartType = MutableStateFlow(TOP_RATED)
 
-    private val _flowOfPageNo = MutableStateFlow(10)
+    private val _flowOfPageNo = MutableStateFlow(1)
 
     override val flowOfChartedMovies: StateFlow<Result<List<MovieDomainModel>>> = _flowOfChartedMovies
 
@@ -51,54 +52,61 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
                 when(it){
                     NORMAL -> TODO()
                     POPULAR -> {
-                        try {
-                            val movieResponse = moviesApi.getPopularMoviesList(
-                                BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), 1, null)
+                        _flowOfPageNo.collect {
+                                page ->
+                            try {
+                                val movieResponse = moviesApi.getPopularMoviesList(
+                                    BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), page, null)
 
-                            saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
-                                chartedMoviesDao, movieResponse, POPULAR
-                            )
-                            _flowOfChartedMovies.emit(Result.DoneLoading)
-                        } catch (e: Exception) {
-                            _flowOfChartedMovies.emit(Result.DoneLoading)
-                            _flowOfChartedMovies.emit(Result.Error(e))
-                            e.printStackTrace()
+                                saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
+                                    chartedMoviesDao, movieResponse, POPULAR
+                                )
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                            } catch (e: Exception) {
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                                _flowOfChartedMovies.emit(Result.Error(e))
+                                e.printStackTrace()
+                            }
                         }
                     }
                     TOP_RATED -> {
-                        try {
-                            val movieResponse = moviesApi.getTopRatedMoviesList(
-                                BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), 1, null)
+                        _flowOfPageNo.collect {
+                                page ->
+                            try {
+                                val movieResponse = moviesApi.getTopRatedMoviesList(
+                                    BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), page, null)
 
-                            saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
-                                chartedMoviesDao, movieResponse, TOP_RATED
-                            )
-                            _flowOfChartedMovies.emit(Result.DoneLoading)
-                        } catch (e: Exception) {
-                            _flowOfChartedMovies.emit(Result.DoneLoading)
-                            _flowOfChartedMovies.emit(Result.Error(e))
-                            e.printStackTrace()
+                                saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
+                                    chartedMoviesDao, movieResponse, POPULAR
+                                )
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                            } catch (e: Exception) {
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                                _flowOfChartedMovies.emit(Result.Error(e))
+                                e.printStackTrace()
+                            }
                         }
                     }
                     UPCOMING -> {
-//                        try {
-//                            val movieResponse = moviesApi.getUpcomingMoviesList(
-//                                BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), 1, null)
-//
-//                            saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
-//                                chartedMoviesDao, movieResponse, POPULAR
-//                            )
-//                            _flowOfChartedMovies.emit(Result.DoneLoading)
-//                        } catch (e: Exception) {
-//                            _flowOfChartedMovies.emit(Result.DoneLoading)
-//                            _flowOfChartedMovies.emit(Result.Error(e))
-//                            e.printStackTrace()
-//                        }
+                        _flowOfPageNo.collect {
+                                page ->
+                            try {
+                                val upComingMovieResponse = moviesApi.getUpcomingMoviesList(
+                                    BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), page, null)
 
+                                saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
+                                    chartedMoviesDao, upComingMovieResponse.toMovieResponse(), POPULAR
+                                )
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                            } catch (e: Exception) {
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                                _flowOfChartedMovies.emit(Result.Error(e))
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 }
             }
-
         }
     }
 
@@ -113,9 +121,11 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
         }
     }
 
-    private suspend fun observeChartedMovies(chartType: ChartType, page: Int
+    private suspend fun observeChartedMovies(
+        chartType: ChartType,
+        page: Int
     ): Flow<Result<List<MovieDomainModel>>> =
-        chartedMoviesDao.getListOfChartedMovies(chartType, page).map {
+        chartedMoviesDao.getListOfChartedMovies(chartType, page * 10 - 10).map {
                 moviesList ->
             val movieDomainList = mutableListOf<MovieDomainModel>()
             for(movie in moviesList) {
@@ -184,5 +194,4 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
                 movieDetails.toMovieWithProductionCompany(productionCompany.id))
         }
     }
-
 }

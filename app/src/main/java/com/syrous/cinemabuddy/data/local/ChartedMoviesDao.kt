@@ -15,6 +15,6 @@ interface ChartedMoviesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun makeEntryForMovie(chartedEntry: ChartedMovies)
 
-    @Query("SELECT * FROM moviedbmodel as m JOIN chartedmovies ON id = movieId WHERE chartType = :chartType LIMIT 10,:offset ")
+    @Query("SELECT * FROM moviedbmodel as m JOIN chartedmovies ON id = movieId WHERE chartType = :chartType LIMIT :offset,10 ")
     fun getListOfChartedMovies(chartType: ChartType, offset: Int): Flow<List<MovieDBModel>>
 }

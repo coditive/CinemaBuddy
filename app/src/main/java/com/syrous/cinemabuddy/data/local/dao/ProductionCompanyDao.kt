@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.data.local
+package com.syrous.cinemabuddy.data.local.dao
 
 import androidx.room.*
 import com.syrous.cinemabuddy.data.local.model.MovieDBModel

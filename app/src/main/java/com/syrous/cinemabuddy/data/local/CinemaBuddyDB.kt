@@ -3,6 +3,7 @@ package com.syrous.cinemabuddy.data.local
 import androidx.room.*
 import com.syrous.cinemabuddy.data.local.TypeConverters.DateTypeConverter
 import com.syrous.cinemabuddy.data.local.TypeConverters.MovieTypeConverter
+import com.syrous.cinemabuddy.data.local.dao.*
 import com.syrous.cinemabuddy.data.local.model.*
 import com.syrous.cinemabuddy.domain.model.GenreDomainModel
 import com.syrous.cinemabuddy.domain.model.ProductionCompanyDomainModel

@@ -1,19 +1,17 @@
 package com.syrous.cinemabuddy.backgroundwork.notification
 
 import android.content.Context
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.R
 import com.syrous.cinemabuddy.backgroundwork.common.BaseWorker
-import com.syrous.cinemabuddy.data.local.MoviesDao
-import com.syrous.cinemabuddy.data.local.NotificationDao
-import com.syrous.cinemabuddy.data.local.ProductionCompanyDao
-import com.syrous.cinemabuddy.utils.NOTIFICATION_CHANNEL_ID
+import com.syrous.cinemabuddy.data.local.dao.MoviesDao
+import com.syrous.cinemabuddy.data.local.dao.NotificationDao
+import com.syrous.cinemabuddy.data.local.dao.ProductionCompanyDao
 import com.syrous.cinemabuddy.utils.SUBSCRIPTION_NOTIFICATION_CHANNEL_ID
-import com.syrous.cinemabuddy.utils.SystemConfigStorage
+import com.syrous.cinemabuddy.domain.usecases.SystemConfigUseCase
 import com.syrous.cinemabuddy.utils.createSubscriptionNotificationChannel
 import kotlinx.coroutines.flow.collect
 import kotlin.random.Random
@@ -23,7 +21,7 @@ class NotificationWorker(
     private val moviesDao: MoviesDao,
     private val productionCompanyDao: ProductionCompanyDao,
     private val notificationDao: NotificationDao,
-    private val systemConfigStorage: SystemConfigStorage,
+    private val systemConfigUseCase: SystemConfigUseCase,
     private val context: Context
 ): BaseWorker(workerParameters, context) {
     override suspend fun doWork(): Result {

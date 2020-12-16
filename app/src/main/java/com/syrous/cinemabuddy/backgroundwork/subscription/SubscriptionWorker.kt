@@ -1,15 +1,11 @@
 package com.syrous.cinemabuddy.backgroundwork.subscription
 
 import android.content.Context
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.BuildConfig
-import com.syrous.cinemabuddy.R
 import com.syrous.cinemabuddy.backgroundwork.common.BaseWorker
-import com.syrous.cinemabuddy.data.local.*
+import com.syrous.cinemabuddy.data.local.dao.*
 import com.syrous.cinemabuddy.data.local.model.toNotificationDBModel
 import com.syrous.cinemabuddy.data.retrofit.model.toChartedMovie
 import com.syrous.cinemabuddy.data.retrofit.model.toMovieDbModel
@@ -20,13 +16,9 @@ import com.syrous.cinemabuddy.data.retrofit.response.UpcomingMovieResponse
 import com.syrous.cinemabuddy.data.retrofit.response.toMovieWithProductionCompany
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.ChartType
-import com.syrous.cinemabuddy.utils.NOTIFICATION_CHANNEL_ID
-import com.syrous.cinemabuddy.utils.SystemConfigStorage
-import com.syrous.cinemabuddy.utils.createNotificationChannel
+import com.syrous.cinemabuddy.domain.usecases.SystemConfigUseCase
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlin.jvm.Throws
-import kotlin.random.Random
 
 class SubscriptionWorker(
     workerParameters: WorkerParameters,
@@ -36,42 +28,42 @@ class SubscriptionWorker(
     private val moviesDao: MoviesDao,
     private val moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
     private val productionCompanyDao: ProductionCompanyDao,
-    private val systemConfigStorage: SystemConfigStorage,
+    private val systemConfigUseCase: SystemConfigUseCase,
     private val notificationDao: NotificationDao,
     private val context: Context
     ): BaseWorker(workerParameters, context) {
     override suspend fun doWork(): Result {
        return try {
-           systemConfigStorage.updateSubscriptionWorkerSyncStartTime(System.currentTimeMillis())
+           systemConfigUseCase.updateSubscriptionWorkerSyncStartTime(System.currentTimeMillis())
 
            val result = moviesApi.getUpcomingMoviesList(BuildConfig.API_KEY_V3,
-               systemConfigStorage.getUserLang(),1, null)
+               systemConfigUseCase.getUserLang(),1, null)
 
-           saveMoviesToLocalStorage(result, ChartType.UPCOMING)
+//           saveMoviesToLocalStorage(result, ChartType.UPCOMING)
+//
+//           for(movie in result.movieModelList) {
+//               val movieDetails = moviesApi.getMovieDetails(movie.id, BuildConfig.API_KEY_V3,
+//                   systemConfigUseCase.getUserLang())
+//
+//               saveMovieWithProductionDetails(movieDetails)
+//           }
+//
+//
+//           for(i in 2..result.totalPages) {
+//                val response = moviesApi.getUpcomingMoviesList(BuildConfig.API_KEY_V3,
+//                systemConfigUseCase.getUserLang(), i, null)
+//
+//               saveMoviesToLocalStorage(response, ChartType.UPCOMING)
+//
+//               for(movie in response.movieModelList) {
+//                   val movieDetails = moviesApi.getMovieDetails(movie.id, BuildConfig.API_KEY_V3,
+//                       systemConfigUseCase.getUserLang())
+//
+//                   saveMovieWithProductionDetails(movieDetails)
+//               }
+//           }
 
-           for(movie in result.movieModelList) {
-               val movieDetails = moviesApi.getMovieDetails(movie.id, BuildConfig.API_KEY_V3,
-                   systemConfigStorage.getUserLang())
-
-               saveMovieWithProductionDetails(movieDetails)
-           }
-
-
-           for(i in 2..result.totalPages) {
-                val response = moviesApi.getUpcomingMoviesList(BuildConfig.API_KEY_V3,
-                systemConfigStorage.getUserLang(), i, null)
-
-               saveMoviesToLocalStorage(response, ChartType.UPCOMING)
-
-               for(movie in response.movieModelList) {
-                   val movieDetails = moviesApi.getMovieDetails(movie.id, BuildConfig.API_KEY_V3,
-                       systemConfigStorage.getUserLang())
-
-                   saveMovieWithProductionDetails(movieDetails)
-               }
-           }
-
-           systemConfigStorage.updateSubscriptionWorkerSyncEndTime(System.currentTimeMillis())
+           systemConfigUseCase.updateSubscriptionWorkerSyncEndTime(System.currentTimeMillis())
 
            buildDebugNotificationAndShow("Finished Subscription Saving in DB",
                "Upcoming Movies are stored in DB with production Companies", context)

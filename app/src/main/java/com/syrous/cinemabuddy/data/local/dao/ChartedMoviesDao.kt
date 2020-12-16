@@ -1,4 +1,4 @@
-package com.syrous.cinemabuddy.data.local
+package com.syrous.cinemabuddy.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert

@@ -1,39 +1,26 @@
 package com.syrous.cinemabuddy.data.usecases
 
-import android.util.Log
 import com.syrous.cinemabuddy.BuildConfig
 import com.syrous.cinemabuddy.data.local.*
-import com.syrous.cinemabuddy.data.local.model.toMovieDomainModel
-import com.syrous.cinemabuddy.data.retrofit.model.toChartedMovie
-import com.syrous.cinemabuddy.data.retrofit.model.toMovieDbModel
-import com.syrous.cinemabuddy.data.retrofit.model.toMovieWithGenre
-import com.syrous.cinemabuddy.data.retrofit.model.toProductionCompanyDomainModel
-import com.syrous.cinemabuddy.data.retrofit.response.MovieDetailResponse
-import com.syrous.cinemabuddy.data.retrofit.response.MovieResponse
+import com.syrous.cinemabuddy.data.retrofit.RemoteDataSource
 import com.syrous.cinemabuddy.data.retrofit.response.toMovieResponse
-import com.syrous.cinemabuddy.data.retrofit.response.toMovieWithProductionCompany
-import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.ChartType.*
 import com.syrous.cinemabuddy.domain.model.MovieDomainModel
 import com.syrous.cinemabuddy.domain.model.Result
-import com.syrous.cinemabuddy.domain.model.Result.Success
 import com.syrous.cinemabuddy.domain.usecases.FetchChartedMoviesUseCase
-import com.syrous.cinemabuddy.utils.SystemConfigStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import javax.inject.Inject
 import kotlin.jvm.Throws
 
 @FlowPreview
 class FetchChartedMoviesUseCaseImpl @Inject constructor(
-    private val moviesDao: MoviesDao,
-    private val moviesApi: MoviesApi,
-    private val moviesWithGenreDao: MoviesWithGenreDao,
-    private val chartedMoviesDao: ChartedMoviesDao,
-    private val sysConfigStorage: SystemConfigStorage
+   private val localDataSource: LocalDataSource,
+   private val remoteDataSource: RemoteDataSource
 ): FetchChartedMoviesUseCase {
 
     private val _flowOfChartedMovies =
@@ -45,26 +32,29 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
 
     override val flowOfChartedMovies: StateFlow<Result<List<MovieDomainModel>>> = _flowOfChartedMovies
 
+    @Throws(Exception::class)
     override suspend fun execute() {
         _flowOfChartedMovies.emit(Result.Loading)
         withContext(Dispatchers.IO) {
             _flowOfChartType.collect {
                 when(it){
-                    NORMAL -> TODO()
+                    NORMAL -> throw RuntimeException("Invalid Movie Type.")
                     POPULAR -> {
                         _flowOfPageNo.collect {
                                 page ->
                             try {
-                                val movieResponse = moviesApi.getPopularMoviesList(
-                                    BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), page, null)
-
-                                saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
-                                    chartedMoviesDao, movieResponse, POPULAR
-                                )
+                                remoteDataSource.fetchPopularMoviesList(page).collect {
+                                        movieResponse -> localDataSource.saveMoviesToLocalStorage(
+                                    movieResponse, POPULAR)
+                                }
                                 _flowOfChartedMovies.emit(Result.DoneLoading)
+                            } catch (e: HttpException) {
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                                _flowOfChartedMovies.emit(Result.NetworkError(e))
+                                e.printStackTrace()
                             } catch (e: Exception) {
                                 _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.Error(e))
+                                _flowOfChartedMovies.emit(Result.GeneralError(e))
                                 e.printStackTrace()
                             }
                         }
@@ -73,16 +63,18 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
                         _flowOfPageNo.collect {
                                 page ->
                             try {
-                                val movieResponse = moviesApi.getTopRatedMoviesList(
-                                    BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), page, null)
-
-                                saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
-                                    chartedMoviesDao, movieResponse, POPULAR
-                                )
+                                remoteDataSource.fetchTopRatedMoviesList(page).collect {
+                                        movieResponse -> localDataSource.saveMoviesToLocalStorage(
+                                    movieResponse, TOP_RATED)
+                                }
                                 _flowOfChartedMovies.emit(Result.DoneLoading)
+                            } catch (e: HttpException) {
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                                _flowOfChartedMovies.emit(Result.NetworkError(e))
+                                e.printStackTrace()
                             } catch (e: Exception) {
                                 _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.Error(e))
+                                _flowOfChartedMovies.emit(Result.GeneralError(e))
                                 e.printStackTrace()
                             }
                         }
@@ -91,16 +83,18 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
                         _flowOfPageNo.collect {
                                 page ->
                             try {
-                                val upComingMovieResponse = moviesApi.getUpcomingMoviesList(
-                                    BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang(), page, null)
-
-                                saveMoviesToLocalStorage(moviesDao, moviesWithGenreDao,
-                                    chartedMoviesDao, upComingMovieResponse.toMovieResponse(), POPULAR
-                                )
+                                remoteDataSource.fetchUpcomingMoviesList(page).collect {
+                                        upComingMovieResponse -> localDataSource.saveMoviesToLocalStorage(
+                                    upComingMovieResponse.toMovieResponse(), UPCOMING)
+                                }
                                 _flowOfChartedMovies.emit(Result.DoneLoading)
+                            } catch (e: HttpException) {
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                                _flowOfChartedMovies.emit(Result.NetworkError(e))
+                                e.printStackTrace()
                             } catch (e: Exception) {
                                 _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.Error(e))
+                                _flowOfChartedMovies.emit(Result.GeneralError(e))
                                 e.printStackTrace()
                             }
                         }
@@ -114,26 +108,14 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
        _flowOfChartedMovies.emit(Result.Loading)
         _flowOfChartType.combine(_flowOfPageNo) {
             chartTypeFlow, pageFlow ->
-            observeChartedMovies(chartTypeFlow, pageFlow)
+            localDataSource.observeChartedMovies(chartTypeFlow, pageFlow)
         }.flattenConcat().collect {
             _flowOfChartedMovies.emit(Result.DoneLoading)
             _flowOfChartedMovies.emit(it)
         }
     }
 
-    private suspend fun observeChartedMovies(
-        chartType: ChartType,
-        page: Int
-    ): Flow<Result<List<MovieDomainModel>>> =
-        chartedMoviesDao.getListOfChartedMovies(chartType, page * 10 - 10).map {
-                moviesList ->
-            val movieDomainList = mutableListOf<MovieDomainModel>()
-            for(movie in moviesList) {
-                val genreList = moviesWithGenreDao.getGenreListForMovie(movie.id)
-                movieDomainList.add(movie.toMovieDomainModel(genreList))
-            }
-            Success(movieDomainList.toList())
-        }
+
 
     override suspend fun reload() {
         TODO("Not yet implemented")
@@ -151,47 +133,12 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    @Throws(Exception::class)
-    private suspend fun saveMoviesToLocalStorage(
-        moviesDao: MoviesDao,
-        moviesWithGenreDao: MoviesWithGenreDao,
-        chartedMoviesDao: ChartedMoviesDao,
-        movieResponse: MovieResponse,
-        chartType: ChartType
-    ){
-        for (movie in movieResponse.movieModelList) {
-            moviesDao.saveMovie(movie.toMovieDbModel())
-            for(genre in movie.genreIdList) {
-                moviesWithGenreDao.saveMovieWithGenre(movie.toMovieWithGenre(genre))
-            }
-            chartedMoviesDao.makeEntryForMovie(movie.toChartedMovie(chartType))
-        }
-    }
 
-    private suspend fun fetchMovieDetails(
-        movieId: Int,
-        productionCompanyDao: ProductionCompanyDao,
-        moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao
-    ) {
+    private suspend fun fetchMovieDetails(movieId: Int) {
         withContext(Dispatchers.IO) {
-            val result = moviesApi.getMovieDetails(movieId, BuildConfig.API_KEY_V3, sysConfigStorage.getUserLang())
-            saveMovieWithProductionDetails(result, productionCompanyDao, moviesWithProductionCompanyDao)
-        }
-    }
-
-
-    @Throws(Exception::class)
-    private suspend fun saveMovieWithProductionDetails(
-        movieDetails: MovieDetailResponse,
-        productionCompanyDao: ProductionCompanyDao,
-        moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao
-    ) {
-        for(productionCompany in movieDetails.productionCompanyList) {
-            productionCompanyDao.saveProductionCompany(productionCompany
-                .toProductionCompanyDomainModel(false))
-
-            moviesWithProductionCompanyDao.saveMovieWithProductionCompany(
-                movieDetails.toMovieWithProductionCompany(productionCompany.id))
+            remoteDataSource.fetchMoviesDetails(movieId).collect {
+                result -> localDataSource.saveMovieWithProductionDetails(result)
+            }
         }
     }
 }

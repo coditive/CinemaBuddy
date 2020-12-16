@@ -3,10 +3,9 @@ package com.syrous.cinemabuddy.backgroundwork.subscription
 import android.content.Context
 import android.os.Build
 import androidx.work.*
-import com.syrous.cinemabuddy.backgroundwork.subscription.SubscriptionWorker
-import com.syrous.cinemabuddy.data.local.*
+import com.syrous.cinemabuddy.data.local.dao.*
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
-import com.syrous.cinemabuddy.utils.SystemConfigStorage
+import com.syrous.cinemabuddy.domain.usecases.SystemConfigUseCase
 import java.util.concurrent.TimeUnit
 
 class SubscriptionWorkFactory (
@@ -16,7 +15,7 @@ class SubscriptionWorkFactory (
     private val chartedMoviesDao: ChartedMoviesDao,
     private val moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
     private val productionCompanyDao: ProductionCompanyDao,
-    private val systemConfigStorage: SystemConfigStorage,
+    private val systemConfigUseCase: SystemConfigUseCase,
     private val notificationDao: NotificationDao
     ): WorkerFactory() {
     override fun createWorker(
@@ -32,7 +31,7 @@ class SubscriptionWorkFactory (
                 moviesDao,
                 moviesWithProductionCompanyDao,
                 productionCompanyDao,
-                systemConfigStorage,
+                systemConfigUseCase,
                 notificationDao,
                 appContext)
         else null
@@ -47,7 +46,7 @@ fun Context.enqueueSubscriptionWorker(): WorkRequest {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) constraints.setRequiresDeviceIdle(true)
 
     val workRequest = PeriodicWorkRequestBuilder<SubscriptionWorker>(1, TimeUnit.DAYS)
-//        .setConstraints(constraints.build())
+        .setConstraints(constraints.build())
         .addTag(SubscriptionWorker.SUBSCRIPTION_TAG)
         .build()
 

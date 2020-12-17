@@ -5,8 +5,10 @@ import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.syrous.cinemabuddy.BuildConfig
 import com.syrous.cinemabuddy.backgroundwork.common.BaseWorker
+import com.syrous.cinemabuddy.data.local.LocalDataSource
 import com.syrous.cinemabuddy.data.local.dao.*
 import com.syrous.cinemabuddy.data.local.model.toNotificationDBModel
+import com.syrous.cinemabuddy.data.retrofit.RemoteDataSource
 import com.syrous.cinemabuddy.data.retrofit.model.toChartedMovie
 import com.syrous.cinemabuddy.data.retrofit.model.toMovieDbModel
 import com.syrous.cinemabuddy.data.retrofit.model.toMovieWithGenre
@@ -22,12 +24,8 @@ import kotlin.jvm.Throws
 
 class SubscriptionWorker(
     workerParameters: WorkerParameters,
-    private val moviesApi: MoviesApi,
-    private val chartedMoviesDao: ChartedMoviesDao,
-    private val moviesWithGenreDao: MoviesWithGenreDao,
-    private val moviesDao: MoviesDao,
-    private val moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
-    private val productionCompanyDao: ProductionCompanyDao,
+    private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource,
     private val systemConfigUseCase: SystemConfigUseCase,
     private val notificationDao: NotificationDao,
     private val context: Context
@@ -35,9 +33,9 @@ class SubscriptionWorker(
     override suspend fun doWork(): Result {
        return try {
            systemConfigUseCase.updateSubscriptionWorkerSyncStartTime(System.currentTimeMillis())
-
-           val result = moviesApi.getUpcomingMoviesList(BuildConfig.API_KEY_V3,
-               systemConfigUseCase.getUserLang(),1, null)
+//
+//           val result = moviesApi.getUpcomingMoviesList(BuildConfig.API_KEY_V3,
+//               systemConfigUseCase.getUserLang(),1, null)
 
 //           saveMoviesToLocalStorage(result, ChartType.UPCOMING)
 //
@@ -67,19 +65,19 @@ class SubscriptionWorker(
 
            buildDebugNotificationAndShow("Finished Subscription Saving in DB",
                "Upcoming Movies are stored in DB with production Companies", context)
-
-           productionCompanyDao.getSubscribedProductionCompaniesList().collect {
-               prodComp ->
-               if(prodComp != null) {
-                   val moviesList =
-                       productionCompanyDao.getUpcomingMoviesForAProductionCompany(prodComp.id)
-                   for (movie in moviesList) {
-                       notificationDao.saveNotification(
-                           movie.toNotificationDBModel(prodComp.id)
-                       )
-                   }
-               }
-           }
+//
+//           productionCompanyDao.getSubscribedProductionCompaniesList().collect {
+//               prodComp ->
+//               if(prodComp != null) {
+//                   val moviesList =
+//                       productionCompanyDao.getUpcomingMoviesForAProductionCompany(prodComp.id)
+//                   for (movie in moviesList) {
+//                       notificationDao.saveNotification(
+//                           movie.toNotificationDBModel(prodComp.id)
+//                       )
+//                   }
+//               }
+//           }
            Result.success()
        } catch (e: Exception) {
             val failureOutput = Data.Builder()
@@ -96,24 +94,24 @@ class SubscriptionWorker(
 
     @Throws(Exception::class)
     private suspend fun saveMoviesToLocalStorage(movieResponse: UpcomingMovieResponse, chartType: ChartType) {
-        for (movie in movieResponse.movieModelList) {
-            moviesDao.saveMovie(movie.toMovieDbModel())
-            for(genre in movie.genreIdList) {
-                moviesWithGenreDao.saveMovieWithGenre(movie.toMovieWithGenre(genre))
-            }
-            chartedMoviesDao.makeEntryForMovie(movie.toChartedMovie(chartType))
-        }
+//        for (movie in movieResponse.movieModelList) {
+//            moviesDao.saveMovie(movie.toMovieDbModel())
+//            for(genre in movie.genreIdList) {
+//                moviesWithGenreDao.saveMovieWithGenre(movie.toMovieWithGenre(genre))
+//            }
+//            chartedMoviesDao.makeEntryForMovie(movie.toChartedMovie(chartType))
+//        }
     }
 
     @Throws(Exception::class)
     private suspend fun saveMovieWithProductionDetails(movieDetails: MovieDetailResponse) {
-        for(productionCompany in movieDetails.productionCompanyList) {
-            productionCompanyDao.saveProductionCompany(productionCompany
-                .toProductionCompanyDomainModel(false))
-
-            moviesWithProductionCompanyDao.saveMovieWithProductionCompany(
-                movieDetails.toMovieWithProductionCompany(productionCompany.id))
-        }
+//        for(productionCompany in movieDetails.productionCompanyList) {
+//            productionCompanyDao.saveProductionCompany(productionCompany
+//                .toProductionCompanyDomainModel(false))
+//
+//            moviesWithProductionCompanyDao.saveMovieWithProductionCompany(
+//                movieDetails.toMovieWithProductionCompany(productionCompany.id))
+//        }
     }
 
     companion object {

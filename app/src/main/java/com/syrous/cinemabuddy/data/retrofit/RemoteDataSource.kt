@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface RemoteDataSource {
 
-    fun fetchGenreList(): Flow<GenreResponse>
+    fun fetchGenreList(): Flow<RetrofitResult<GenreResponse>>
 
-    fun fetchPopularMoviesList(page: Int): Flow<MovieResponse>
+    fun fetchPopularMoviesList(page: Int): Flow<RetrofitResult<MovieResponse>>
 
-    fun fetchTopRatedMoviesList(page: Int): Flow<MovieResponse>
+    fun fetchTopRatedMoviesList(page: Int): Flow<RetrofitResult<MovieResponse>>
 
-    fun fetchUpcomingMoviesList(page: Int): Flow<UpcomingMovieResponse>
+    fun fetchUpcomingMoviesList(page: Int): Flow<RetrofitResult<UpcomingMovieResponse>>
 
-    fun fetchMoviesDetails(movieId: Int): Flow<MovieDetailResponse>
+    fun fetchMoviesDetails(movieId: Int): Flow<RetrofitResult<MovieDetailResponse>>
 }

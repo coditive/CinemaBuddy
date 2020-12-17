@@ -3,18 +3,16 @@ package com.syrous.cinemabuddy.backgroundwork.subscription
 import android.content.Context
 import android.os.Build
 import androidx.work.*
+import com.syrous.cinemabuddy.data.local.LocalDataSource
 import com.syrous.cinemabuddy.data.local.dao.*
+import com.syrous.cinemabuddy.data.retrofit.RemoteDataSource
 import com.syrous.cinemabuddy.data.retrofit.service.MoviesApi
 import com.syrous.cinemabuddy.domain.usecases.SystemConfigUseCase
 import java.util.concurrent.TimeUnit
 
 class SubscriptionWorkFactory (
-    private val moviesApi: MoviesApi,
-    private val moviesWithGenreDao: MoviesWithGenreDao,
-    private val moviesDao: MoviesDao,
-    private val chartedMoviesDao: ChartedMoviesDao,
-    private val moviesWithProductionCompanyDao: MoviesWithProductionCompanyDao,
-    private val productionCompanyDao: ProductionCompanyDao,
+    private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource,
     private val systemConfigUseCase: SystemConfigUseCase,
     private val notificationDao: NotificationDao
     ): WorkerFactory() {
@@ -25,17 +23,12 @@ class SubscriptionWorkFactory (
     ): ListenableWorker? =
         if (workerClassName == SubscriptionWorker::class.java.name)
             SubscriptionWorker(workerParameters,
-                moviesApi,
-                chartedMoviesDao,
-                moviesWithGenreDao,
-                moviesDao,
-                moviesWithProductionCompanyDao,
-                productionCompanyDao,
+                localDataSource,
+                remoteDataSource,
                 systemConfigUseCase,
                 notificationDao,
                 appContext)
         else null
-
 }
 
 fun Context.enqueueSubscriptionWorker(): WorkRequest {

@@ -1,8 +1,8 @@
 package com.syrous.cinemabuddy.data.usecases
 
-import com.syrous.cinemabuddy.BuildConfig
-import com.syrous.cinemabuddy.data.local.*
+import com.syrous.cinemabuddy.data.local.LocalDataSource
 import com.syrous.cinemabuddy.data.retrofit.RemoteDataSource
+import com.syrous.cinemabuddy.data.retrofit.RetrofitResult
 import com.syrous.cinemabuddy.data.retrofit.response.toMovieResponse
 import com.syrous.cinemabuddy.domain.model.ChartType
 import com.syrous.cinemabuddy.domain.model.ChartType.*
@@ -13,14 +13,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 import javax.inject.Inject
-import kotlin.jvm.Throws
 
 @FlowPreview
 class FetchChartedMoviesUseCaseImpl @Inject constructor(
-   private val localDataSource: LocalDataSource,
-   private val remoteDataSource: RemoteDataSource
+    private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource
 ): FetchChartedMoviesUseCase {
 
     private val _flowOfChartedMovies =
@@ -40,62 +38,52 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
                 when(it){
                     NORMAL -> throw RuntimeException("Invalid Movie Type.")
                     POPULAR -> {
-                        _flowOfPageNo.collect {
-                                page ->
-                            try {
-                                remoteDataSource.fetchPopularMoviesList(page).collect {
-                                        movieResponse -> localDataSource.saveMoviesToLocalStorage(
-                                    movieResponse, POPULAR)
+                        _flowOfPageNo.collect { page ->
+                            remoteDataSource.fetchPopularMoviesList(page).take(1)
+                                .collect { movieResponse ->
+                                    _flowOfChartedMovies.emit(Result.DoneLoading)
+                                    if (movieResponse is RetrofitResult.Success) {
+                                        localDataSource.saveMoviesToLocalStorage(
+                                            movieResponse.data, POPULAR
+                                        )
+                                    } else if (movieResponse is RetrofitResult.NetworkError) {
+                                        _flowOfChartedMovies.emit(Result.NetworkError(movieResponse.exception))
+                                    }
                                 }
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                            } catch (e: HttpException) {
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.NetworkError(e))
-                                e.printStackTrace()
-                            } catch (e: Exception) {
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.GeneralError(e))
-                                e.printStackTrace()
-                            }
                         }
                     }
                     TOP_RATED -> {
                         _flowOfPageNo.collect {
                                 page ->
-                            try {
-                                remoteDataSource.fetchTopRatedMoviesList(page).collect {
-                                        movieResponse -> localDataSource.saveMoviesToLocalStorage(
-                                    movieResponse, TOP_RATED)
+                            remoteDataSource.fetchTopRatedMoviesList(page).take(1).collect {
+                                    movieResponse ->
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                                if(movieResponse is RetrofitResult.Success) {
+                                    localDataSource.saveMoviesToLocalStorage(
+                                        movieResponse.data, TOP_RATED)
+                                } else if(movieResponse is RetrofitResult.NetworkError) {
+                                    _flowOfChartedMovies.emit(Result.NetworkError(movieResponse.exception))
                                 }
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                            } catch (e: HttpException) {
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.NetworkError(e))
-                                e.printStackTrace()
-                            } catch (e: Exception) {
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.GeneralError(e))
-                                e.printStackTrace()
                             }
+
                         }
                     }
                     UPCOMING -> {
                         _flowOfPageNo.collect {
                                 page ->
-                            try {
-                                remoteDataSource.fetchUpcomingMoviesList(page).collect {
-                                        upComingMovieResponse -> localDataSource.saveMoviesToLocalStorage(
-                                    upComingMovieResponse.toMovieResponse(), UPCOMING)
+                            remoteDataSource.fetchUpcomingMoviesList(page).take(1).collect { upComingMovieResponse ->
+                                _flowOfChartedMovies.emit(Result.DoneLoading)
+                                if (upComingMovieResponse is RetrofitResult.Success) {
+                                    localDataSource.saveMoviesToLocalStorage(
+                                        upComingMovieResponse.data.toMovieResponse(), UPCOMING
+                                    )
+                                } else if (upComingMovieResponse is RetrofitResult.NetworkError) {
+                                    _flowOfChartedMovies.emit(
+                                        Result.NetworkError(
+                                            upComingMovieResponse.exception
+                                        )
+                                    )
                                 }
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                            } catch (e: HttpException) {
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.NetworkError(e))
-                                e.printStackTrace()
-                            } catch (e: Exception) {
-                                _flowOfChartedMovies.emit(Result.DoneLoading)
-                                _flowOfChartedMovies.emit(Result.GeneralError(e))
-                                e.printStackTrace()
                             }
                         }
                     }
@@ -105,9 +93,9 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
     }
 
     override suspend fun loadChartedMoviesFromLocalStorage() {
-       _flowOfChartedMovies.emit(Result.Loading)
+        _flowOfChartedMovies.emit(Result.Loading)
         _flowOfChartType.combine(_flowOfPageNo) {
-            chartTypeFlow, pageFlow ->
+                chartTypeFlow, pageFlow ->
             localDataSource.observeChartedMovies(chartTypeFlow, pageFlow)
         }.flattenConcat().collect {
             _flowOfChartedMovies.emit(Result.DoneLoading)
@@ -136,8 +124,10 @@ class FetchChartedMoviesUseCaseImpl @Inject constructor(
 
     private suspend fun fetchMovieDetails(movieId: Int) {
         withContext(Dispatchers.IO) {
-            remoteDataSource.fetchMoviesDetails(movieId).collect {
-                result -> localDataSource.saveMovieWithProductionDetails(result)
+            remoteDataSource.fetchMoviesDetails(movieId).take(1).collect {
+                    result -> if(result is RetrofitResult.Success) {
+                localDataSource.saveMovieWithProductionDetails(result.data)
+            }
             }
         }
     }
